@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0.5dp"
+    app:strokeColor="@color/hadirku_gray_border"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp">
+
+        <!-- Time Column -->
+        <LinearLayout
+            android:layout_width="54dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvScheduleStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="07:00"
+                android:textColor="@color/hadirku_text_dark"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvScheduleEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="07:45"
+                android:textColor="@color/hadirku_text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Divider Line -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="12dp"
+            android:background="#E5E7EB" />
+
+        <!-- Subject & Teacher Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvScheduleSubject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bahasa Indonesia"
+                android:textColor="@color/hadirku_text_dark"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvScheduleTeacher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Pak Joko Santoso"
+                android:textColor="@color/hadirku_text_muted"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Status / Room Pill Badge -->
+        <TextView
+            android:id="@+id/tvScheduleStatusPill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_hadirku_primary_btn"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            android:text="Hadir"
+            android:textColor="@color/white"
+            android:textSize="11.5sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

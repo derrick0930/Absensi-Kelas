@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/card_bg"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="3dp"
+    app:strokeColor="#E2E8F0"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Row: Class Badge & Period Badge & Status -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvClassBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_button_orange"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="XI TKJ 1"
+                android:textColor="@color/white"
+                android:textSize="10.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPeriodBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_button_navy"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="Jam Ke-1 s/d 2"
+                android:textColor="@color/white"
+                android:textSize="10.5sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvAttendanceStatusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#ECFDF5"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="Sesi Dibuka"
+                android:textColor="#059669"
+                android:textSize="10.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Subject Name -->
+        <TextView
+            android:id="@+id/tvSubjectName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Administrasi Server &amp; Jaringan"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Time Slot: Start and End Times -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waktu:"
+                android:textColor="@color/text_muted"
+                android:textSize="11.5sp" />
+
+            <TextView
+                android:id="@+id/tvTimeSlot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="07:00 - 08:30 WIB"
+                android:textColor="@color/primary_navy"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvClassRoom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Ruang: Lab TKJ 1"
+                android:textColor="@color/text_secondary"
+                android:textSize="11.5sp" />
+        </LinearLayout>
+
+        <!-- Teacher Name & Info -->
+        <TextView
+            android:id="@+id/tvTeacherName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Guru: Pak Budi Santoso, S.Kom"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <!-- Student Attendance Count Recap (Clickable to view class attendance) -->
+        <LinearLayout
+            android:id="@+id/btnViewAttendanceList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="#F8FAFC"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="7dp">
+
+            <TextView
+                android:id="@+id/tvAttendanceInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Kehadiran Siswa: 0 hadir"
+                android:textColor="@color/text_secondary"
+                android:textSize="11.5sp" />
+
+            <TextView
+                android:id="@+id/tvViewAttendanceAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lihat Daftar Hadir ›"
+                android:textColor="@color/primary_navy"
+                android:textSize="11.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Action Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Teacher Specific: Edit Time Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTeacherEditTime"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="8dp"
+                android:paddingHorizontal="10dp"
+                android:text="Atur Jam"
+                android:textAllCaps="false"
+                android:textColor="@color/primary_navy"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/primary_navy"
+                app:strokeWidth="1dp" />
+
+            <!-- Teacher Specific: Toggle Open/Close Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTeacherToggleSession"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:paddingHorizontal="8dp"
+                android:text="Buka/Tutup Presensi"
+                android:textAllCaps="false"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="8dp" />
+
+            <!-- Student Specific: Clock-In Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMarkAttendance"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_button_navy"
+                android:text="Presensi Masuk (Clock-In)"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:backgroundTint="@null"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

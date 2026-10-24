@@ -1,0 +1,1387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/hadirku_bg">
+
+    <!-- Top AppBar for Teacher & Admin (Hidden for Student to match Figma clean header) -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_navy"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="14dp">
+
+            <ImageView
+                android:id="@+id/ivUserAvatar"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_student_card"
+                android:padding="2dp"
+                android:src="@drawable/ic_student_avatar" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rina Aulia Putri"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvUserSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Siswa • NIS: 2410031 • XI IPA 2"
+                    android:textColor="#93C5FD"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnLogout"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Keluar"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_lock_power_off"
+                app:tint="@color/white" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="60dp">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="24dp">
+
+                <!-- ======================================================== -->
+                <!-- 1. STUDENT VIEW (MATCHING FIGMA ANDROID COMPACT 4 & TABS)-->
+                <!-- ======================================================== -->
+                <LinearLayout
+                    android:id="@+id/sectionStudentView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <!-- TAB 1: BERANDA (FIGMA ANDROID COMPACT - 4) -->
+                    <LinearLayout
+                        android:id="@+id/layoutStudentBeranda"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="20dp"
+                        android:visibility="visible">
+
+                        <!-- Header: User Avatar & Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <!-- Avatar Circle (Caramel Background) -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                app:cardBackgroundColor="@color/hadirku_caramel"
+                                app:cardCornerRadius="22dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp">
+
+                                <TextView
+                                    android:id="@+id/tvBerandaAvatarInitials"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="RA"
+                                    android:textColor="@color/white"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvBerandaDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Senin, 12 Okt 2026"
+                                    android:textColor="@color/hadirku_text_muted"
+                                    android:textSize="11.5sp" />
+
+                                <TextView
+                                    android:id="@+id/tvBerandaStudentName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Rina Aulia Putri"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Hero Active Attendance Card (Deep Emerald Green #0D5C46) -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardHeroAttendance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:cardBackgroundColor="@color/hadirku_primary"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="3dp"
+                            app:strokeWidth="0dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="20dp">
+
+                                <TextView
+                                    android:id="@+id/tvHeroSubtext"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="NIS 2410031 · Kelas XI IPA 2"
+                                    android:textColor="#CCFFFFFF"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tvHeroAttendanceTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Absensi Matematika sedang dibuka"
+                                    android:textColor="@color/white"
+                                    android:textSize="17.5sp"
+                                    android:textStyle="bold" />
+
+                                <!-- Yellow Pill Button: Absen sekarang -->
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnHeroClockIn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginTop="16dp"
+                                    android:backgroundTint="@color/hadirku_yellow"
+                                    android:paddingHorizontal="20dp"
+                                    android:text="Absen sekarang"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/hadirku_primary"
+                                    android:textSize="12.5sp"
+                                    android:textStyle="bold"
+                                    app:cornerRadius="20dp"
+                                    app:strokeWidth="0dp" />
+
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- 3 Stats Cards Row (Figma: 92% Kehadiran | 2 Izin/Sakit | 0 Alpa) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <!-- Stat 1: Kehadiran -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="14dp">
+
+                                    <TextView
+                                        android:id="@+id/tvStudentStatPercent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="92%"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Kehadiran"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11.5sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Stat 2: Izin/Sakit -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="3dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="14dp">
+
+                                    <TextView
+                                        android:id="@+id/tvStudentStatIzin"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Izin/sakit"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11.5sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Stat 3: Alpa -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="14dp">
+
+                                    <TextView
+                                        android:id="@+id/tvStudentStatAlpa"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="0"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Alpa"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11.5sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Section "Jadwal hari ini" Header & Day Chips -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Jadwal hari ini"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="17sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvBerandaClassNote"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hanya kelas XI IPA 2"
+                                android:textColor="@color/hadirku_text_muted"
+                                android:textSize="11.5sp" />
+                        </LinearLayout>
+
+                        <!-- Day filter tabs (Sen, Sel, Rab, Kam, Jum) -->
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chipGroupBerandaDays"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipBerandaSen"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Sen"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipBerandaSel"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sel"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipBerandaRab"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Rab"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipBerandaKam"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kam"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipBerandaJum"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Jum"
+                                android:textSize="12sp" />
+                        </com.google.android.material.chip.ChipGroup>
+
+                        <!-- Today's Schedule Items Container -->
+                        <LinearLayout
+                            android:id="@+id/layoutTodaySchedulesContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="vertical" />
+
+                        <!-- Retained IDs for legacy code compatibility (hidden) -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/tvToggleCardLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:id="@+id/btnToggleCardView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <include
+                                android:id="@+id/cardStudentDetail"
+                                layout="@layout/view_student_id_card" />
+
+                            <TextView
+                                android:id="@+id/tvCalendarMonthTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:id="@+id/layoutCalendarDaysContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:id="@+id/bannerSelectedDateStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <View
+                                android:id="@+id/dotSelectedDateStatus"
+                                android:layout_width="1dp"
+                                android:layout_height="1dp" />
+
+                            <TextView
+                                android:id="@+id/tvSelectedDateSummary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:id="@+id/tvStudentClassTag"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:id="@+id/layoutStudentSchedulesContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- TAB 2: JADWAL (FIGMA SISWA - JADWAL) -->
+                    <LinearLayout
+                        android:id="@+id/layoutStudentJadwal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="24dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/tvJadwalClassHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kelas XI IPA 2"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Jadwal pelajaran"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <!-- Day filter chips -->
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chipGroupJadwalDays"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipJadwalSen"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Sen"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipJadwalSel"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sel"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipJadwalRab"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Rab"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipJadwalKam"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kam"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipJadwalJum"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Jum"
+                                android:textSize="12sp" />
+                        </com.google.android.material.chip.ChipGroup>
+
+                        <!-- Full Schedule List Container -->
+                        <LinearLayout
+                            android:id="@+id/layoutFullSchedulesContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="vertical" />
+
+                        <!-- Notice Box (Figma soft mint box) -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            app:cardBackgroundColor="@color/hadirku_soft_mint"
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="0dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="14dp"
+                                android:text="Absen dibuka 15 menit sebelum jam mapel dimulai dan ditutup sesuai batas yang ditentukan guru."
+                                android:textColor="@color/hadirku_primary"
+                                android:textSize="12sp" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </LinearLayout>
+
+                    <!-- TAB 3: RIWAYAT (FIGMA SISWA - RIWAYAT) -->
+                    <LinearLayout
+                        android:id="@+id/layoutStudentRiwayat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="24dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/tvRiwayatMonthHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Oktober 2026"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Riwayat absensi"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <!-- Summary Row (18 Hadir | 2 Izin/Sakit | 0 Alpa) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:id="@+id/tvRiwayatHadirCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="18"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Hadir"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11.5sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="3dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:id="@+id/tvRiwayatIzinCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Izin/sakit"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11.5sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:id="@+id/tvRiwayatAlpaCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="0"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Alpa"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11.5sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Filter Chips: Semua, Hadir, Izin, Alpa -->
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chipGroupRiwayatFilter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipFilterRiwayatSemua"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Semua"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipFilterRiwayatHadir"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hadir"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipFilterRiwayatIzin"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Izin"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipFilterRiwayatAlpa"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Alpa"
+                                android:textSize="12sp" />
+                        </com.google.android.material.chip.ChipGroup>
+
+                        <!-- Attendance History List Container -->
+                        <LinearLayout
+                            android:id="@+id/layoutAttendanceHistoryContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+
+                    <!-- TAB 4: PROFIL (FIGMA SISWA - PROFIL) -->
+                    <LinearLayout
+                        android:id="@+id/layoutStudentProfil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="24dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Akun siswa"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Profil"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <!-- Profile Header Card -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:padding="16dp">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:layout_width="52dp"
+                                    android:layout_height="52dp"
+                                    app:cardBackgroundColor="@color/hadirku_caramel"
+                                    app:cardCornerRadius="26dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+
+                                    <TextView
+                                        android:id="@+id/tvProfilAvatarInitials"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="RA"
+                                        android:textColor="@color/white"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvProfilName"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Rina Aulia Putri"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvProfilNisClass"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="NIS 2410031 · XI IPA 2"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="6dp"
+                                        android:background="#ECFDF5"
+                                        android:paddingHorizontal="8dp"
+                                        android:paddingVertical="3dp"
+                                        android:text="✓ Kartu terverifikasi"
+                                        android:textColor="#059669"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Section: Verifikasi 3 lapis -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Verifikasi 3 lapis"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <!-- Row 1: Lokasi sekolah / kelas -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Lokasi sekolah / kelas"
+                                            android:textColor="@color/hadirku_text_dark"
+                                            android:textSize="13.5sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/tvProfilLocationSub"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="2dp"
+                                            android:text="Radius toleransi 50 m ke kordinat kelas"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="11.5sp" />
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/tvProfilLocationBadge"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ECFDF5"
+                                        android:paddingHorizontal="10dp"
+                                        android:paddingVertical="4dp"
+                                        android:text="Aktif"
+                                        android:textColor="#059669"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="12dp"
+                                    android:background="#F3F4F6" />
+
+                                <!-- Row 2: Sidik jari -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Sidik jari"
+                                            android:textColor="@color/hadirku_text_dark"
+                                            android:textSize="13.5sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="2dp"
+                                            android:text="Sensor biometrik perangkat"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="11.5sp" />
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/tvProfilBiometricBadge"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ECFDF5"
+                                        android:paddingHorizontal="10dp"
+                                        android:paddingVertical="4dp"
+                                        android:text="Terdaftar"
+                                        android:textColor="#059669"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="12dp"
+                                    android:background="#F3F4F6" />
+
+                                <!-- Row 3: Pengenalan wajah -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Pengenalan wajah"
+                                            android:textColor="@color/hadirku_text_dark"
+                                            android:textSize="13.5sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="2dp"
+                                            android:text="Verifikasi biometrik wajah"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="11.5sp" />
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/tvProfilFaceBadge"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ECFDF5"
+                                        android:paddingHorizontal="10dp"
+                                        android:paddingVertical="4dp"
+                                        android:text="Terdaftar"
+                                        android:textColor="#059669"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Section: Akun -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Akun"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Username"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvProfilUsername"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="rina.xipa2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="10dp"
+                                    android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Password"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="••••••••"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="10dp"
+                                    android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Kelas"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvProfilClass"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="XI IPA 2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Action Buttons: Ganti password & Keluar -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnProfilChangePassword"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="20dp"
+                            android:text="Ganti password"
+                            android:textAllCaps="false"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1.2dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnProfilLogout"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Keluar"
+                            android:textAllCaps="false"
+                            android:textColor="@color/hadirku_red"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp"
+                            app:strokeColor="@color/hadirku_red_light"
+                            app:strokeWidth="1.2dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- ======================================================== -->
+                <!-- 2. TEACHER VIEW                                          -->
+                <!-- ======================================================== -->
+                <LinearLayout
+                    android:id="@+id/sectionTeacherView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/hadirku_primary"
+                        app:cardCornerRadius="18dp"
+                        app:cardElevation="3dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="18dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Manajemen Jam Pelajaran Mengajar"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Tentukan jam mulai dan jam selesai pelajaran, serta buka sesi presensi untuk siswa."
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnTeacherAddSchedule"
+                                android:layout_width="match_parent"
+                                android:layout_height="46dp"
+                                android:layout_marginTop="14dp"
+                                android:background="@drawable/bg_hadirku_primary_btn"
+                                android:text="+ Tambah Jadwal Mengajar Baru"
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:backgroundTint="@null"
+                                app:cornerRadius="10dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:scrollbars="none">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chipGroupTeacherClassFilter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipTeacherFilterAll"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Semua Jadwal"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipTeacherFilterTkj1"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="XI IPA 2"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipTeacherFilterTkj2"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="XI TKJ 1"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipTeacherFilterRpl"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="XII RPL 1"
+                                android:textSize="12sp" />
+                        </com.google.android.material.chip.ChipGroup>
+                    </HorizontalScrollView>
+
+                    <LinearLayout
+                        android:id="@+id/layoutTeacherSchedulesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <!-- ======================================================== -->
+                <!-- 3. ADMIN VIEW                                            -->
+                <!-- ======================================================== -->
+                <LinearLayout
+                    android:id="@+id/sectionAdminView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="18dp"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pusat Kontrol HadirKu"
+                                android:textColor="@color/hadirku_primary"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="SMKS Taruna Jaya Prawira Tuban"
+                                android:textColor="@color/hadirku_text_muted"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnAdminAddSchedule"
+                                android:layout_width="match_parent"
+                                android:layout_height="46dp"
+                                android:layout_marginTop="14dp"
+                                android:background="@drawable/bg_hadirku_primary_btn"
+                                android:text="+ Buat Jadwal Pelajaran Sekolah"
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:backgroundTint="@null"
+                                app:cornerRadius="10dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:id="@+id/layoutAdminSchedulesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Bottom Navigation Bar for Student (Figma Beranda, Jadwal, Riwayat, Profil) -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavStudent"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        app:elevation="8dp"
+        app:itemIconSize="22dp"
+        app:itemIconTint="@color/color_nav_item"
+        app:itemTextColor="@color/color_nav_item"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_bottom_nav_student" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

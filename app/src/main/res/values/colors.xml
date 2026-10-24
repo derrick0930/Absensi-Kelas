@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_navy">#0F2D6B</color>
+    <color name="primary_navy_dark">#081738</color>
+    <color name="primary_navy_light">#1E3A8A</color>
+    <color name="accent_orange">#F97316</color>
+    <color name="accent_orange_dark">#EA580C</color>
+    <color name="accent_orange_light">#FB923C</color>
+    <color name="accent_cyan">#0284C7</color>
+    <color name="accent_gold">#F59E0B</color>
+
+    <color name="bg_light">#F8FAFC</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="surface_variant">#F1F5F9</color>
+    <color name="stroke_border">#E2E8F0</color>
+
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_muted">#94A3B8</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="status_present">#10B981</color>
+    <color name="status_present_bg">#ECFDF5</color>
+    <color name="status_absent">#EF4444</color>
+    <color name="status_absent_bg">#FEF2F2</color>
+    <color name="status_pending">#F59E0B</color>
+    <color name="status_pending_bg">#FFFBEB</color>
+
+    <!-- HadirKu Figma Theme Colors -->
+    <color name="hadirku_primary">#0D5C46</color>
+    <color name="hadirku_primary_dark">#083D2E</color>
+    <color name="hadirku_primary_light">#177359</color>
+    <color name="hadirku_bg">#F7F9F8</color>
+    <color name="hadirku_card_bg">#FFFFFF</color>
+    <color name="hadirku_soft_mint">#EBF5F0</color>
+    <color name="hadirku_caramel">#C07D38</color>
+    <color name="hadirku_yellow">#FCD34D</color>
+    <color name="hadirku_yellow_dark">#D97706</color>
+    <color name="hadirku_yellow_bg">#FEF3C7</color>
+    <color name="hadirku_gray_bg">#F3F4F6</color>
+    <color name="hadirku_gray_border">#E5E7EB</color>
+    <color name="hadirku_text_dark">#111827</color>
+    <color name="hadirku_text_muted">#6B7280</color>
+    <color name="hadirku_red">#EF4444</color>
+    <color name="hadirku_red_light">#FEE2E2</color>
+
+    <color name="scanner_overlay">#99000000</color>
+    <color name="laser_red">#FF2D55</color>
+    <color name="laser_cyan">#00E5FF</color>
+</resources>

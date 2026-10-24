@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    app:strokeColor="#CBD5E1"
+    app:strokeWidth="1.5dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="12dp">
+
+        <!-- Top Header: Deep Navy Blue Banner with School Identity -->
+        <FrameLayout
+            android:id="@+id/layoutTopHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/primary_navy"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp">
+
+                <!-- School Emblem with "THE WINNER" badge -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="THE WINNER"
+                        android:textColor="#BFDBFE"
+                        android:textSize="7sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivSchoolLogo"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:contentDescription="@string/school_name"
+                        android:src="@drawable/ic_school_badge" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvFoundationName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA"
+                        android:textColor="#FCD34D"
+                        android:textSize="9.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvSchoolName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SMKS TARUNA JAYA PRAWIRA TUBAN"
+                        android:textColor="@color/white"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvSchoolContact1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="JL. DR. WAHIDIN SUDIROHUSODO (0356) 324379"
+                        android:textColor="#93C5FD"
+                        android:textSize="7.5sp" />
+
+                    <TextView
+                        android:id="@+id/tvSchoolContact2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FAX. (0356) 332482 TUBAN - JAWA TIMUR"
+                        android:textColor="#93C5FD"
+                        android:textSize="7.5sp" />
+
+                    <TextView
+                        android:id="@+id/tvSchoolWebEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Website : www.smktjp.sch.id   E-mail : info@smktjp.sch.id"
+                        android:textColor="#CBD5E1"
+                        android:textSize="7sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/badgeClassTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_button_orange"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:text="XI TKJ 1"
+                    android:textColor="@color/white"
+                    android:textSize="9.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Orange Accent Line -->
+        <View
+            android:id="@+id/accentRibbon"
+            android:layout_width="0dp"
+            android:layout_height="3.5dp"
+            android:background="@color/accent_orange"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutTopHeader" />
+
+        <!-- Title: KARTU PELAJAR -->
+        <TextView
+            android:id="@+id/tvCardTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:letterSpacing="0.08"
+            android:text="KARTU PELAJAR"
+            android:textColor="@color/primary_navy"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/accentRibbon" />
+
+        <View
+            android:id="@+id/cardTitleUnderline"
+            android:layout_width="140dp"
+            android:layout_height="2.5dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/primary_navy"
+            app:layout_constraintEnd_toEndOf="@id/tvCardTitle"
+            app:layout_constraintStart_toStartOf="@id/tvCardTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvCardTitle" />
+
+        <!-- Card Body Layout -->
+        <LinearLayout
+            android:id="@+id/layoutCardBody"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            android:gravity="top"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardTitleUnderline">
+
+            <!-- Left: Circular Photo & Barcode -->
+            <LinearLayout
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <!-- Circular Photo Frame with Blue & Orange Rings -->
+                <FrameLayout
+                    android:layout_width="84dp"
+                    android:layout_height="84dp"
+                    android:background="@drawable/bg_student_card"
+                    android:padding="2dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/accent_orange"
+                        app:strokeWidth="2.5dp">
+
+                        <ImageView
+                            android:id="@+id/ivStudentPhoto"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="Foto Siswa"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_student_avatar" />
+                    </com.google.android.material.card.MaterialCardView>
+                </FrameLayout>
+
+                <!-- Barcode Graphic -->
+                <ImageView
+                    android:id="@+id/ivBarcode"
+                    android:layout_width="92dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="8dp"
+                    android:contentDescription="Barcode NISN"
+                    android:src="@drawable/ic_barcode_sample" />
+
+                <!-- Barcode Number String -->
+                <TextView
+                    android:id="@+id/tvBarcodeNisn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.14"
+                    android:text="0095687758"
+                    android:textColor="@color/black"
+                    android:textSize="9.5sp"
+                    android:textStyle="bold" />
+
+                <!-- Small Orange Dot below Barcode -->
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_button_orange" />
+            </LinearLayout>
+
+            <!-- Right: Student Details matching physical card -->
+            <TableLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:stretchColumns="2">
+
+                <!-- NISN -->
+                <TableRow android:layout_marginBottom="4dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NISN"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text=":"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tvStudentNisn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0095687758"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11.5sp"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <!-- Nama -->
+                <TableRow android:layout_marginBottom="4dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nama"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text=":"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tvStudentName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DERRICK VITO RENGGADITA"
+                        android:textColor="@color/primary_navy"
+                        android:textSize="11.5sp"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <!-- TTL -->
+                <TableRow android:layout_marginBottom="4dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TTL"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text=":"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tvStudentTtl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tuban, 23 Februari 2009"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp" />
+                </TableRow>
+
+                <!-- Alamat -->
+                <TableRow android:layout_marginBottom="4dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Alamat"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text=":"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvStudentAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="DS. Jarorejo RT.03/02"
+                            android:textColor="@color/text_primary"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tvStudentAddressSub"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kerek - Tuban"
+                            android:textColor="@color/text_primary"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+                </TableRow>
+
+                <!-- Agama -->
+                <TableRow android:layout_marginBottom="4dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Agama"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text=":"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tvStudentReligion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Islam"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp" />
+                </TableRow>
+
+                <!-- Gol. Darah -->
+                <TableRow android:layout_marginBottom="4dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gol. Darah"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text=":"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tvStudentBloodType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A"
+                        android:textColor="@color/primary_navy"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+
+        <!-- Official Stamp & Headmaster Signature Row -->
+        <LinearLayout
+            android:id="@+id/layoutStampSignature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutCardBody">
+
+            <!-- Official Stamp -->
+            <ImageView
+                android:layout_width="52dp"
+                android:layout_height="36dp"
+                android:contentDescription="Stempel Sekolah"
+                android:src="@drawable/ic_stamp_signature" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kepala SMKS Taruna Jaya Prawira Tuban"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="8.5sp" />
+
+                <TextView
+                    android:id="@+id/tvHeadmasterName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bambang Kusdiyanto, ST.M.Pd"
+                    android:textColor="@color/text_primary"
+                    android:textSize="9.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Decorative Orange Dots at bottom right corner (from photo) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_button_orange" />
+
+                <View
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:background="@drawable/bg_button_orange" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

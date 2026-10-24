@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">HadirKu</string>
+    <string name="school_name">SMKS TARUNA JAYA PRAWIRA TUBAN</string>
+    <string name="foundation_name">YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA</string>
+    <string name="school_address">Jl. Dr. Wahidin Sudirohusodo - Tuban</string>
+    <string name="app_tagline">Sistem Presensi HadirKu</string>
+
+    <!-- Roles -->
+    <string name="role_student">Siswa</string>
+    <string name="role_teacher">Guru</string>
+    <string name="role_admin">Admin</string>
+
+    <!-- Figma Login Strings -->
+    <string name="login_title">Masuk ke HadirKu</string>
+    <string name="login_subtitle">Gunakan username yang kamu buat saat mendaftar.</string>
+    <string name="username_label">Username</string>
+    <string name="username_hint">contoh: rina.xipa2</string>
+    <string name="password_label">Password</string>
+    <string name="password_hint">Masukkan password</string>
+    <string name="forgot_password">Lupa password?</string>
+    <string name="btn_login">Masuk</string>
+    <string name="register_prompt">Belum punya akun? <font color="#0D5C46"><b>Daftar dengan kartu pelajar</b></font></string>
+    <string name="register_prompt_plain">Belum punya akun? Daftar dengan kartu pelajar</string>
+
+    <!-- Scanner / Registration Flow -->
+    <string name="step_1_of_2">LANGKAH 1 DARI 2</string>
+    <string name="step_2_of_2">LANGKAH 2 DARI 2</string>
+    <string name="scan_card_title">Pindai kartu pelajar</string>
+    <string name="scan_card_subtitle">Posisikan kartu di dalam bingkai agar NIS terbaca otomatis.</string>
+    <string name="scan_card_hint">Pastikan pencahayaan cukup dan seluruh sisi kartu terlihat.</string>
+    <string name="btn_start_scan">Mulai pindai</string>
+    <string name="btn_input_nis_manual">Input NIS manual</string>
+    <string name="create_account_title">Buat akunmu</string>
+    <string name="btn_create_account">Buat akun</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_beranda">Beranda</string>
+    <string name="tab_jadwal">Jadwal</string>
+    <string name="tab_riwayat">Riwayat</string>
+    <string name="tab_profil">Profil</string>
+</resources>

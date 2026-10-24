@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- Top Navigation & Step Indicator -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Kembali"
+            android:padding="8dp"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/hadirku_text_dark" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Flash Torch Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFlash"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:backgroundTint="#F3F4F6"
+            android:paddingHorizontal="12dp"
+            android:text="Flash"
+            android:textColor="@color/hadirku_text_dark"
+            android:textSize="12sp"
+            app:cornerRadius="19dp"
+            app:icon="@drawable/ic_flash_off"
+            app:iconGravity="textStart"
+            app:iconSize="16dp"
+            app:iconTint="@color/hadirku_text_dark"
+            app:strokeWidth="0dp" />
+    </LinearLayout>
+
+    <!-- Header Titles (Figma Android Compact - 2) -->
+    <LinearLayout
+        android:id="@+id/headerTitles"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step_1_of_2"
+            android:textColor="@color/hadirku_primary"
+            android:textSize="11.5sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/scan_card_title"
+            android:textColor="@color/hadirku_text_dark"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/scan_card_subtitle"
+            android:textColor="@color/hadirku_text_muted"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- Scanner Camera Card Container (Figma Dark Green Rounded Card) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardCameraContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="#0E231B"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#174A38"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvScanHint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerTitles">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Camera Preview View -->
+            <androidx.camera.view.PreviewView
+                android:id="@+id/previewView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- Dim Overlay -->
+            <View
+                android:id="@+id/overlayDim"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#33000000" />
+
+            <!-- Card Guide Target Frame -->
+            <FrameLayout
+                android:id="@+id/scannerFrame"
+                android:layout_width="290dp"
+                android:layout_height="185dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_scanner_reticle">
+
+                <!-- Animated Laser Line -->
+                <View
+                    android:id="@+id/laserLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="2.5dp"
+                    android:background="#10B981" />
+
+                <!-- Reticle Text Guide -->
+                <TextView
+                    android:id="@+id/tvReticleGuide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Posisikan kartu di sini"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Scanning Progress Indicator Overlay -->
+            <LinearLayout
+                android:id="@+id/layoutScanningIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_hadirku_primary_btn"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progressScanning"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:indeterminateTint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvScanningStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Memproses kartu..."
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Scan Hint Under Container -->
+    <TextView
+        android:id="@+id/tvScanHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:text="@string/scan_card_hint"
+        android:textColor="@color/hadirku_text_muted"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnCaptureScan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Button 1: Mulai Pindai (Figma Solid Green Button) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCaptureScan"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_hadirku_primary_btn"
+        android:text="@string/btn_start_scan"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:backgroundTint="@null"
+        app:cornerRadius="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnInputManual"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Button 2: Input NIS Manual (Figma Text Button) -->
+    <TextView
+        android:id="@+id/btnInputManual"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:text="@string/btn_input_nis_manual"
+        android:textColor="@color/hadirku_primary"
+        android:textSize="13.5sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

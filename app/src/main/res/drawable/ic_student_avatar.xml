@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Background Circle -->
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M60,60m-58,0a58,58 0,1 1,116 0a58,58 0,1 1,-116 0" />
+    <!-- Head -->
+    <path
+        android:fillColor="#D4A373"
+        android:pathData="M60,25m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0" />
+    <!-- Hair -->
+    <path
+        android:fillColor="#1E293B"
+        android:pathData="M38,26c0,-14 9.5,-22 22,-22c12.5,0 22,8 22,22c0,3 -2,5 -5,5c-4,0 -6,-4 -10,-4c-5,0 -7,4 -13,4c-4,0 -6,-4 -10,-4c-3,0 -6,2 -6,-1z" />
+    <!-- Uniform Collar & Shirt -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,105c0,-25 16,-38 36,-38s36,13 36,38z" />
+    <!-- Tie / School Attribute -->
+    <path
+        android:fillColor="#0284C7"
+        android:pathData="M56,67l8,0l4,22l-8,8l-8,-8z" />
+</vector>

@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="80dp"
+    android:viewportWidth="120"
+    android:viewportHeight="80">
+    <!-- Circular school seal stamp -->
+    <path
+        android:strokeColor="#7E22CE"
+        android:strokeWidth="1.5"
+        android:fillColor="#15A855F7"
+        android:pathData="M35,40m-28,0a28,28 0,1 1,56 0a28,28 0,1 1,-56 0" />
+    <path
+        android:strokeColor="#7E22CE"
+        android:strokeWidth="1"
+        android:pathData="M35,40m-23,0a23,23 0,1 1,46 0a23,23 0,1 1,-46 0" />
+    <!-- Signature Line -->
+    <path
+        android:strokeColor="#0F172A"
+        android:strokeWidth="2"
+        android:pathData="M30,50c15,-25 10,-5 25,-15c10,-7 5,5 30,-5c8,-3 12,-1 20,-2" />
+</vector>
