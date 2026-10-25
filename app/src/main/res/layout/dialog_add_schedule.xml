@@ -170,18 +170,77 @@
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
+    <!-- Date Selection (Tanggal / Bulan / Tahun) -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilScheduleDate"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="Tanggal Pelaksanaan (Pilih Tanggal)"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:endIconMode="custom">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etScheduleDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:hint="Pilih Tanggal (Contoh: 2026-10-24)"
+            android:textColor="@color/text_primary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Day Selection -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilDaySelect"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="Hari (Otomatis terisi sesuai tanggal)"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDayName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Senin"
+            android:textColor="@color/text_primary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSaveSchedule"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bg_button_navy"
-        android:text="Simpan &amp; Buka Presensi Kelas"
+        android:layout_height="50dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_hadirku_primary_btn"
+        android:text="Simpan Jadwal Mengajar"
         android:textAllCaps="false"
         android:textColor="@color/white"
-        android:textSize="14.5sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:backgroundTint="@null"
         app:cornerRadius="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCancelSchedule"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:text="Batal"
+        android:textAllCaps="false"
+        android:textColor="@color/text_secondary"
+        android:textSize="13.5sp"
+        app:cornerRadius="12dp"
+        app:strokeColor="@color/hadirku_gray_border" />
 
 </LinearLayout>

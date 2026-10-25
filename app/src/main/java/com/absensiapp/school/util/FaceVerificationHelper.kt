@@ -226,7 +226,7 @@ object FaceVerificationHelper {
         }
     }
 
-    const val MIN_BRIGHTNESS_THRESHOLD = 65f // Skala intensitas cahaya 0 - 255 (di bawah 65 dianggap terlalu gelap)
+    const val MIN_BRIGHTNESS_THRESHOLD = 25f // Skala intensitas cahaya 0 - 255 (pencahayaan terlihat jelas sudah cukup)
 
     /**
      * Menghitung rata-rata intensitas pencahayaan (luminance) pada area wajah.

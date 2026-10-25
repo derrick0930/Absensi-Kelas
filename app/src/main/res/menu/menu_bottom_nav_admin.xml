@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_admin_dashboard"
+        android:icon="@drawable/ic_nav_home"
+        android:title="Dashboard" />
+
+    <item
+        android:id="@+id/nav_admin_presensi"
+        android:icon="@drawable/ic_nav_calendar"
+        android:title="Presensi" />
+
+    <item
+        android:id="@+id/nav_admin_master"
+        android:icon="@drawable/ic_nav_master"
+        android:title="Master" />
+
+    <item
+        android:id="@+id/nav_admin_aktivitas"
+        android:icon="@drawable/ic_nav_activity"
+        android:title="Aktivitas" />
+
+    <item
+        android:id="@+id/nav_admin_profil"
+        android:icon="@drawable/ic_nav_profile"
+        android:title="Profil" />
+</menu>

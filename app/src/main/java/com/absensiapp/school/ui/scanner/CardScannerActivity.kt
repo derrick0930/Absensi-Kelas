@@ -33,6 +33,7 @@ import com.absensiapp.school.databinding.ActivityCardScannerBinding
 import com.absensiapp.school.databinding.DialogSetPasswordBinding
 import com.absensiapp.school.ui.dashboard.DashboardActivity
 import com.absensiapp.school.util.CardDataParser
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -108,11 +109,6 @@ class CardScannerActivity : AppCompatActivity() {
 
         binding.btnCaptureScan.setOnClickListener {
             triggerManualScan()
-        }
-
-        binding.btnInputManual.setOnClickListener {
-            // Manual NIS Input option - allows entering NIS or using Rina Aulia Putri / Derrick Vito
-            showManualNisInputDialog()
         }
     }
 
@@ -345,40 +341,29 @@ class CardScannerActivity : AppCompatActivity() {
     /**
      * Physical student ID card detected via live camera feed or shutter button.
      */
+    /**
+     * Physical student ID card detected via live camera feed or shutter button.
+     */
     private fun onCardDetected(cardData: StudentCardData) {
         if (isProcessingScan) return
         isProcessingScan = true
 
         runOnUiThread {
             binding.layoutScanningIndicator.visibility = View.GONE
-            showSetPasswordDialog(cardData)
+            showRegistrationDialog(initialCardData = cardData)
         }
     }
 
-    private fun showSetPasswordDialog(cardData: StudentCardData) {
+    private fun showRegistrationDialog(initialCardData: StudentCardData) {
         val dialog = BottomSheetDialog(this)
         val dialogBinding = DialogSetPasswordBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
-        dialog.setCancelable(false)
 
-        // Setup student info badge (Figma Step 2)
-        val initials = cardData.name.split(" ")
-            .filter { it.isNotBlank() }
-            .take(2)
-            .map { it.first().uppercaseChar() }
-            .joinToString("")
-            .ifEmpty { "S" }
-
-        dialogBinding.tvBadgeInitials.text = initials
-        dialogBinding.tvBadgeStudentName.text = cardData.name
-        dialogBinding.tvBadgeStudentDetails.text = "NIS ${cardData.nisn} · ${cardData.className} · Kartu terverifikasi"
-
-        // Pre-fill username field with suggested username (e.g. rina.xipa2)
-        val cleanName = cardData.name.trim().lowercase().split(" ").firstOrNull() ?: "siswa"
-        val classPart = cardData.className.lowercase().replace(" ", "")
-        val defaultUsername = if (classPart.isNotEmpty()) "$cleanName.$classPart" else cleanName
-        dialogBinding.etScannedNisn.setText(defaultUsername)
-        dialogBinding.etScannedName.setText(cardData.name)
+        // Make dialog dismissible by swiping down or clicking outside
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.behavior.isHideable = true
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
         // Setup Class Selection Dropdown
         val classOptions = arrayOf(
@@ -390,21 +375,74 @@ class CardScannerActivity : AppCompatActivity() {
         )
         val classAdapter = android.widget.ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, classOptions)
         dialogBinding.actvClassSelection.setAdapter(classAdapter)
-        val initialClass = if (cardData.className.isNotEmpty()) cardData.className else "XI IPA 2"
+
+        fun updateBadgeInfo(name: String, nisn: String, className: String, sourceDesc: String) {
+            val cleanName = name.trim().ifEmpty { "Siswa" }
+            val initials = cleanName.split(" ")
+                .filter { it.isNotBlank() }
+                .take(2)
+                .map { it.first().uppercaseChar() }
+                .joinToString("")
+                .ifEmpty { "S" }
+
+            dialogBinding.tvBadgeInitials.text = initials
+            dialogBinding.tvBadgeStudentName.text = cleanName
+            val displayNis = nisn.trim().ifEmpty { "-" }
+            val displayClass = className.trim().ifEmpty { "XI IPA 2" }
+            dialogBinding.tvBadgeStudentDetails.text = "NIS $displayNis · $displayClass · $sourceDesc"
+        }
+
+        val card = initialCardData
+        dialogBinding.tvStepIndicator.text = "KARTU TERVERIFIKASI"
+        dialogBinding.tvTitleStep2.text = "Buat Akun Siswa"
+        dialogBinding.etStudentNisn.setText(card.nisn)
+        dialogBinding.etScannedName.setText(card.name)
+
+        val initialClass = if (card.className.isNotBlank()) card.className else "XI IPA 2"
         dialogBinding.actvClassSelection.setText(initialClass, false)
 
+        // Auto-suggest username from name and class
+        val cleanFirstName = card.name.trim().lowercase().split(" ").firstOrNull() ?: "siswa"
+        val classSlug = initialClass.lowercase().replace(" ", "")
+        val suggestedUsername = if (classSlug.isNotEmpty()) "$cleanFirstName.$classSlug" else cleanFirstName
+        dialogBinding.etScannedNisn.setText(suggestedUsername)
+
+        updateBadgeInfo(card.name, card.nisn, initialClass, "Kartu Terverifikasi")
+
+        // Live update badge as user edits name, nisn, or class
+        dialogBinding.etScannedName.doAfterTextChanged {
+            val currentName = dialogBinding.etScannedName.text?.toString().orEmpty()
+            val currentNis = dialogBinding.etStudentNisn.text?.toString().orEmpty()
+            val currentClass = dialogBinding.actvClassSelection.text?.toString().orEmpty()
+            updateBadgeInfo(currentName, currentNis, currentClass, "Kartu Terverifikasi")
+        }
+
         dialogBinding.actvClassSelection.setOnItemClickListener { _, _, position, _ ->
-            val chosen = classOptions[position]
-            dialogBinding.cardPreview.badgeClassTag.text = chosen
+            val chosenClass = classOptions[position]
+            val currentName = dialogBinding.etScannedName.text?.toString().orEmpty()
+            val currentNis = dialogBinding.etStudentNisn.text?.toString().orEmpty()
+            updateBadgeInfo(currentName, currentNis, chosenClass, "Kartu Terverifikasi")
         }
 
         dialogBinding.btnSubmitRegistration.setOnClickListener {
+            val enteredNisn = dialogBinding.etStudentNisn.text?.toString()?.trim().orEmpty()
+            val enteredName = dialogBinding.etScannedName.text?.toString()?.trim().orEmpty()
+            val selectedClass = dialogBinding.actvClassSelection.text?.toString()?.trim().orEmpty().ifEmpty { "XI IPA 2" }
             val username = dialogBinding.etScannedNisn.text?.toString()?.trim().orEmpty()
-            val confirmedName = dialogBinding.etScannedName.text?.toString()?.trim().orEmpty()
-            val selectedClass = dialogBinding.actvClassSelection.text?.toString()?.trim().orEmpty()
-            val finalClass = if (selectedClass.isNotEmpty()) selectedClass else "XI IPA 2"
             val password = dialogBinding.etNewPassword.text?.toString()?.trim().orEmpty()
             val confirmPassword = dialogBinding.etConfirmPassword.text?.toString()?.trim().orEmpty()
+
+            if (enteredNisn.isEmpty()) {
+                dialogBinding.tilStudentNisn.error = "Nomor Induk Siswa (NIS/NISN) wajib diisi"
+                return@setOnClickListener
+            }
+            dialogBinding.tilStudentNisn.error = null
+
+            if (enteredName.isEmpty()) {
+                dialogBinding.tilScannedName.error = "Nama lengkap siswa wajib diisi"
+                return@setOnClickListener
+            }
+            dialogBinding.tilScannedName.error = null
 
             if (username.length < 3) {
                 dialogBinding.tilScannedNisn.error = "Username minimal 3 karakter"
@@ -434,10 +472,10 @@ class CardScannerActivity : AppCompatActivity() {
 
             dialogBinding.btnSubmitRegistration.isEnabled = false
 
-            val finalCardData = cardData.copy(
-                nisn = cardData.nisn,
-                name = if (confirmedName.isNotEmpty()) confirmedName.uppercase() else cardData.name,
-                className = finalClass
+            val finalCardData = (initialCardData ?: StudentCardData.DERRICK_VITO).copy(
+                nisn = enteredNisn,
+                name = enteredName.uppercase(),
+                className = selectedClass
             )
 
             lifecycleScope.launch {
@@ -466,6 +504,17 @@ class CardScannerActivity : AppCompatActivity() {
             }
         }
 
+        // Cancel / Dismiss listeners
+        dialogBinding.btnCloseRegistration.setOnClickListener {
+            dialog.dismiss()
+            isProcessingScan = false
+        }
+
+        dialogBinding.btnCancelRegistration.setOnClickListener {
+            dialog.dismiss()
+            isProcessingScan = false
+        }
+
         dialogBinding.tvCancelDialog.setOnClickListener {
             dialog.dismiss()
             isProcessingScan = false
@@ -476,57 +525,5 @@ class CardScannerActivity : AppCompatActivity() {
         }
 
         dialog.show()
-    }
-
-    private fun showManualNisInputDialog() {
-        val input = android.widget.EditText(this).apply {
-            hint = "Contoh: 2410031 atau 0095687758"
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setText("2410031")
-            setSelection(text.length)
-            setPadding(48, 36, 48, 36)
-        }
-
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Input NIS Manual")
-            .setMessage("Masukkan Nomor Induk Siswa (NIS/NISN) terdaftar:")
-            .setView(input)
-            .setPositiveButton("Lanjut") { _, _ ->
-                val enteredNis = input.text.toString().trim()
-                val targetCard = if (enteredNis == "2410031") {
-                    StudentCardData(
-                        nisn = "2410031",
-                        name = "Rina Aulia Putri",
-                        birthPlaceDate = "Tuban, 15 Juli 2009",
-                        address = "Jl. Basuki Rahmat No. 45 Tuban",
-                        religion = "Islam",
-                        bloodType = "O",
-                        schoolName = "SMKS TARUNA JAYA PRAWIRA TUBAN",
-                        foundationName = "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA",
-                        headmasterName = "Bambang Kusdiyanto, ST.M.Pd",
-                        schoolAddress = "JL. DR. WAHIDIN SUDIROHUSODO TUBAN - JAWA TIMUR",
-                        className = "XI IPA 2"
-                    )
-                } else if (enteredNis.isNotEmpty()) {
-                    StudentCardData(
-                        nisn = enteredNis,
-                        name = "Rina Aulia Putri",
-                        birthPlaceDate = "Tuban, 15 Juli 2009",
-                        address = "Tuban",
-                        religion = "Islam",
-                        bloodType = "O",
-                        schoolName = "SMKS TARUNA JAYA PRAWIRA TUBAN",
-                        foundationName = "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA",
-                        headmasterName = "Bambang Kusdiyanto, ST.M.Pd",
-                        schoolAddress = "JL. DR. WAHIDIN SUDIROHUSODO TUBAN - JAWA TIMUR",
-                        className = "XI IPA 2"
-                    )
-                } else {
-                    StudentCardData.DERRICK_VITO
-                }
-                showSetPasswordDialog(targetCard)
-            }
-            .setNegativeButton("Batal", null)
-            .show()
     }
 }

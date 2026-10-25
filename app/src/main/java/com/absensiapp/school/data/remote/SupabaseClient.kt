@@ -5,6 +5,7 @@ import com.absensiapp.school.data.model.AttendanceSchedule
 import com.absensiapp.school.data.model.AttendanceStatus
 import com.absensiapp.school.data.model.SchoolClass
 import com.absensiapp.school.data.model.StudentCardData
+import com.absensiapp.school.data.model.StudentPermission
 import com.absensiapp.school.data.model.UserAccount
 import com.absensiapp.school.data.model.UserRole
 import com.google.gson.Gson
@@ -45,7 +46,7 @@ object SupabaseClient {
         if (!SupabaseConfig.isConfigured()) return@withContext null
         try {
             val encodedId = URLEncoder.encode(id, "UTF-8")
-            val endpoint = "${getBaseRestUrl()}/users?or=(nisn.eq.$encodedId,id.eq.$encodedId)&select=*"
+            val endpoint = "${getBaseRestUrl()}/users?or=(nisn.eq.$encodedId,username.eq.$encodedId,id.eq.$encodedId)&select=*"
             val conn = createConnection(endpoint, "GET")
             if (conn.responseCode in 200..299) {
                 val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)
@@ -60,19 +61,22 @@ object SupabaseClient {
                     }
                     val isBioEnrolled = obj.get("biometric_enrolled")?.asBoolean ?: false
                     val isFaceEnrolled = obj.get("face_enrolled")?.asBoolean ?: false
-                    val faceSig = obj.get("face_signature")?.asString
-                    val bioEnrolledAt = obj.get("biometric_enrolled_at")?.asLong ?: 0L
-                    val devId = obj.get("enrolled_device_id")?.asString
+                    val faceSig = obj.get("face_signature")?.takeIf { !it.isJsonNull }?.asString
+                    val bioEnrolledAt = obj.get("biometric_enrolled_at")?.takeIf { !it.isJsonNull }?.asLong ?: 0L
+                    val devId = obj.get("enrolled_device_id")?.takeIf { !it.isJsonNull }?.asString
                     val rawNisn = obj.get("nisn")?.takeIf { !it.isJsonNull }?.asString
+                    val rawUsername = obj.get("username")?.takeIf { !it.isJsonNull }?.asString
                     val rawId = obj.get("id")?.asString ?: ""
                     val dbId = try { obj.get("id")?.asLong } catch (_: Exception) { null }
                     val effectiveNisn = rawNisn?.ifEmpty { null }
-                    val effectiveId = effectiveNisn ?: rawId
+                    val effectiveUsername = rawUsername?.ifEmpty { null }
+                    val effectiveId = effectiveUsername ?: effectiveNisn ?: rawId
 
                     val user = UserAccount(
                         id = effectiveId,
                         dbId = dbId,
                         nisn = effectiveNisn,
+                        username = effectiveUsername,
                         name = obj.get("name").asString,
                         role = role,
                         passwordHash = obj.get("password").asString,
@@ -100,7 +104,12 @@ object SupabaseClient {
             conn.doOutput = true
 
             val json = JsonObject().apply {
-                addProperty("nisn", user.id)
+                val nisnToSave = user.nisn ?: user.id
+                addProperty("nisn", nisnToSave)
+                val usernameToSave = user.username ?: if (user.role != UserRole.STUDENT) user.id else null
+                if (!usernameToSave.isNullOrBlank()) {
+                    addProperty("username", usernameToSave)
+                }
                 addProperty("name", user.name)
                 addProperty("role", user.role.name)
                 addProperty("password", user.passwordHash)
@@ -130,7 +139,7 @@ object SupabaseClient {
         if (!SupabaseConfig.isConfigured()) return@withContext false
         try {
             val encodedId = URLEncoder.encode(userId, "UTF-8")
-            val endpoint = "${getBaseRestUrl()}/users?or=(nisn.eq.$encodedId,id.eq.$encodedId)"
+            val endpoint = "${getBaseRestUrl()}/users?or=(nisn.eq.$encodedId,username.eq.$encodedId,id.eq.$encodedId)"
             val conn = createConnection(endpoint, "PATCH")
             conn.doOutput = true
 
@@ -150,6 +159,82 @@ object SupabaseClient {
         } catch (_: Exception) {
             false
         }
+    }
+
+    suspend fun updatePassword(
+        userId: String,
+        newPasswordPlain: String
+    ): Boolean = withContext(Dispatchers.IO) {
+        if (!SupabaseConfig.isConfigured()) return@withContext false
+        try {
+            val encodedId = URLEncoder.encode(userId, "UTF-8")
+            val endpoint = "${getBaseRestUrl()}/users?or=(nisn.eq.$encodedId,username.eq.$encodedId,id.eq.$encodedId)"
+            val conn = createConnection(endpoint, "PATCH")
+            conn.doOutput = true
+
+            val json = JsonObject().apply {
+                addProperty("password", newPasswordPlain)
+            }
+
+            conn.outputStream.use { os ->
+                OutputStreamWriter(os, "UTF-8").use { it.write(json.toString()) }
+            }
+
+            return@withContext conn.responseCode in 200..299
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    suspend fun getAllUsersFromDb(): List<UserAccount> = withContext(Dispatchers.IO) {
+        if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
+        try {
+            val endpoint = "${getBaseRestUrl()}/users?select=*"
+            val conn = createConnection(endpoint, "GET")
+            if (conn.responseCode in 200..299) {
+                val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)
+                val array = gson.fromJson(response, JsonArray::class.java)
+                val list = mutableListOf<UserAccount>()
+                for (elem in array) {
+                    val obj = elem.asJsonObject
+                    val roleStr = obj.get("role")?.asString ?: "STUDENT"
+                    val role = try { UserRole.valueOf(roleStr) } catch (_: Exception) { UserRole.STUDENT }
+                    val isBioEnrolled = obj.get("biometric_enrolled")?.asBoolean ?: false
+                    val isFaceEnrolled = obj.get("face_enrolled")?.asBoolean ?: false
+                    val faceSig = obj.get("face_signature")?.takeIf { !it.isJsonNull }?.asString
+                    val bioEnrolledAt = obj.get("biometric_enrolled_at")?.takeIf { !it.isJsonNull }?.asLong ?: 0L
+                    val devId = obj.get("enrolled_device_id")?.takeIf { !it.isJsonNull }?.asString
+                    val rawNisn = obj.get("nisn")?.takeIf { !it.isJsonNull }?.asString
+                    val rawUsername = obj.get("username")?.takeIf { !it.isJsonNull }?.asString
+                    val rawId = obj.get("id")?.asString ?: ""
+                    val dbId = try { obj.get("id")?.asLong } catch (_: Exception) { null }
+                    val effectiveNisn = rawNisn?.ifEmpty { null }
+                    val effectiveUsername = rawUsername?.ifEmpty { null }
+                    val effectiveId = effectiveUsername ?: effectiveNisn ?: rawId
+
+                    list.add(
+                        UserAccount(
+                            id = effectiveId,
+                            dbId = dbId,
+                            nisn = effectiveNisn,
+                            username = effectiveUsername,
+                            name = obj.get("name")?.asString ?: "",
+                            role = role,
+                            passwordHash = obj.get("password")?.asString ?: "12345678",
+                            isBiometricEnrolled = isBioEnrolled,
+                            isFaceEnrolled = isFaceEnrolled,
+                            faceSignature = faceSig,
+                            biometricEnrolledAt = bioEnrolledAt,
+                            enrolledDeviceId = devId
+                        )
+                    )
+                }
+                return@withContext list
+            }
+        } catch (_: Exception) {
+            // Silently fall back
+        }
+        emptyList()
     }
 
     suspend fun saveStudentProfile(card: StudentCardData): Boolean = withContext(Dispatchers.IO) {
@@ -212,6 +297,39 @@ object SupabaseClient {
         null
     }
 
+    suspend fun getAllStudentsFromDb(): List<StudentCardData> = withContext(Dispatchers.IO) {
+        if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
+        try {
+            val endpoint = "${getBaseRestUrl()}/students?select=*&order=name.asc"
+            val conn = createConnection(endpoint, "GET")
+            if (conn.responseCode in 200..299) {
+                val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)
+                val array = gson.fromJson(response, JsonArray::class.java)
+                val list = mutableListOf<StudentCardData>()
+                for (elem in array) {
+                    val obj = elem.asJsonObject
+                    list.add(
+                        StudentCardData(
+                            nisn = obj.get("nisn").asString,
+                            name = obj.get("name").asString,
+                            birthPlaceDate = obj.get("birth_place_date")?.asString.orEmpty(),
+                            address = obj.get("address")?.asString.orEmpty(),
+                            religion = obj.get("religion")?.asString.orEmpty(),
+                            bloodType = obj.get("blood_type")?.asString.orEmpty(),
+                            schoolName = obj.get("school_name")?.asString ?: "SMKS TARUNA JAYA PRAWIRA TUBAN",
+                            className = obj.get("class_name")?.asString ?: "XI IPA 2",
+                            headmasterName = obj.get("headmaster_name")?.asString ?: "Bambang Kusdiyanto, ST.M.Pd"
+                        )
+                    )
+                }
+                return@withContext list
+            }
+        } catch (_: Exception) {
+            // Silently fall back
+        }
+        emptyList()
+    }
+
     suspend fun getSchedules(): List<AttendanceSchedule> = withContext(Dispatchers.IO) {
         if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
         try {
@@ -233,8 +351,10 @@ object SupabaseClient {
                             periodStart = obj.get("period_start").asInt,
                             periodEnd = obj.get("period_end").asInt,
                             timeSlot = obj.get("time_slot").asString,
+                            dayName = obj.get("day_name")?.asString ?: "Senin",
                             room = obj.get("room").asString,
-                            isOpenForAttendance = obj.get("is_open")?.asBoolean ?: true
+                            isOpenForAttendance = obj.get("is_open")?.asBoolean ?: true,
+                            sessionDate = obj.get("session_date")?.asString.orEmpty()
                         )
                     )
                 }
@@ -263,8 +383,10 @@ object SupabaseClient {
                 addProperty("period_start", schedule.periodStart)
                 addProperty("period_end", schedule.periodEnd)
                 addProperty("time_slot", schedule.timeSlot)
+                addProperty("day_name", schedule.dayName)
                 addProperty("room", schedule.room)
                 addProperty("is_open", schedule.isOpenForAttendance)
+                addProperty("session_date", schedule.sessionDate)
             }
 
             conn.outputStream.use { os ->
@@ -474,5 +596,69 @@ object SupabaseClient {
         } catch (_: Exception) {
             false
         }
+    }
+
+    suspend fun savePermission(permission: StudentPermission): Boolean = withContext(Dispatchers.IO) {
+        if (!SupabaseConfig.isConfigured()) return@withContext false
+        try {
+            val endpoint = "${getBaseRestUrl()}/permissions"
+            val conn = createConnection(endpoint, "POST")
+            conn.setRequestProperty("Prefer", "resolution=merge-duplicates")
+            conn.doOutput = true
+
+            val obj = JsonObject().apply {
+                addProperty("id", permission.id)
+                addProperty("student_nisn", permission.studentNisn)
+                addProperty("student_name", permission.studentName)
+                addProperty("class_name", permission.className)
+                addProperty("permission_type", permission.permissionType)
+                addProperty("start_date", permission.startDate)
+                addProperty("end_date", permission.endDate)
+                addProperty("total_days", permission.totalDays)
+                addProperty("reason", permission.reason)
+                addProperty("photo_base64", permission.photoBase64)
+                addProperty("status", permission.status)
+            }
+
+            OutputStreamWriter(conn.outputStream, "UTF-8").use { it.write(obj.toString()) }
+            return@withContext conn.responseCode in 200..299
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    suspend fun getAllPermissions(): List<StudentPermission> = withContext(Dispatchers.IO) {
+        if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
+        try {
+            val endpoint = "${getBaseRestUrl()}/permissions?select=*&order=created_at.desc"
+            val conn = createConnection(endpoint, "GET")
+            if (conn.responseCode in 200..299) {
+                val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)
+                val array = gson.fromJson(response, JsonArray::class.java)
+                val list = mutableListOf<StudentPermission>()
+                for (elem in array) {
+                    val obj = elem.asJsonObject
+                    list.add(
+                        StudentPermission(
+                            id = obj.get("id").asString,
+                            studentNisn = obj.get("student_nisn").asString,
+                            studentName = obj.get("student_name").asString,
+                            className = obj.get("class_name").asString,
+                            permissionType = obj.get("permission_type").asString,
+                            startDate = obj.get("start_date").asString,
+                            endDate = obj.get("end_date").asString,
+                            totalDays = obj.get("total_days")?.asInt ?: 1,
+                            reason = obj.get("reason")?.asString.orEmpty(),
+                            photoBase64 = obj.get("photo_base64")?.asString.orEmpty(),
+                            status = obj.get("status")?.asString ?: "Menunggu"
+                        )
+                    )
+                }
+                return@withContext list
+            }
+        } catch (_: Exception) {
+            // Silently fall back
+        }
+        emptyList()
     }
 }

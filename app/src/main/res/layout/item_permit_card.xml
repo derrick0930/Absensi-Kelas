@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0.5dp"
+    app:strokeColor="@color/hadirku_gray_border"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPermitItemStudentName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Rina Aulia Putri"
+                android:textColor="@color/hadirku_text_dark"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPermitItemStatusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_button_navy"
+                android:backgroundTint="#FEF3C7"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:text="Menunggu"
+                android:textColor="#D97706"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPermitItemDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="NIS 2410031 · XI IPA 2"
+            android:textColor="@color/hadirku_text_muted"
+            android:textSize="11.5sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_nav_calendar"
+                app:tint="@color/hadirku_primary" />
+
+            <TextView
+                android:id="@+id/tvPermitItemDates"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="12/02/2026 s/d 13/02/2026 (1 Hari)"
+                android:textColor="@color/hadirku_primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPermitItemReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Alasan: Sakit demam tinggi"
+            android:textColor="@color/hadirku_text_dark"
+            android:textSize="12sp" />
+
+        <!-- Button Lihat Foto Surat -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewPermitPhoto"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/hadirku_soft_mint"
+            android:paddingHorizontal="12dp"
+            android:text="Lihat Surat Izin"
+            android:textColor="@color/hadirku_primary"
+            android:textSize="11.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp"
+            app:icon="@drawable/ic_nav_permit"
+            app:iconSize="14dp"
+            app:iconTint="@color/hadirku_primary"
+            app:strokeWidth="0dp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

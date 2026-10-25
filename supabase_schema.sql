@@ -1,8 +1,9 @@
 -- 1. TABEL PENGGUNA (USERS)
--- Menyimpan kredensial Siswa, Guru, dan Admin
+-- Menyimpan kredensial Siswa, Guru, dan Admin (termasuk NISN dan Username unik)
 CREATE TABLE IF NOT EXISTS public.users (
     id BIGSERIAL PRIMARY KEY,           -- Nomor urut database otomatis (1, 2, 3, dst.)
-    nisn TEXT UNIQUE,                   -- NISN untuk Siswa (atau NIP/Username)
+    nisn TEXT UNIQUE,                   -- NISN untuk Siswa (atau NIP untuk Guru)
+    username TEXT UNIQUE,               -- Username unik untuk Siswa / Guru / Admin
     name TEXT NOT NULL,
     role TEXT NOT NULL CHECK (role IN ('STUDENT', 'TEACHER', 'ADMIN')),
     password TEXT NOT NULL,
@@ -13,6 +14,9 @@ CREATE TABLE IF NOT EXISTS public.users (
     enrolled_device_id TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration safety jika tabel users sudah ada sebelumnya di Supabase
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;
 
 -- 2. TABEL PROFIL SISWA (STUDENTS)
 CREATE TABLE IF NOT EXISTS public.students (
@@ -67,6 +71,8 @@ CREATE TABLE IF NOT EXISTS public.schedules (
     period_end INT NOT NULL,
     time_slot TEXT NOT NULL,
     room TEXT NOT NULL,
+    day_name TEXT DEFAULT 'Senin',
+    session_date TEXT DEFAULT '',
     is_open BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -118,3 +124,25 @@ CREATE POLICY "Allow public update schedules" ON public.schedules FOR UPDATE USI
 
 CREATE POLICY "Allow public read attendance" ON public.attendance FOR SELECT USING (true);
 CREATE POLICY "Allow public insert attendance" ON public.attendance FOR INSERT WITH CHECK (true);
+
+-- 7. TABEL SURAT IZIN SISWA (PERMISSIONS)
+CREATE TABLE IF NOT EXISTS public.permissions (
+    id TEXT PRIMARY KEY,
+    student_nisn TEXT NOT NULL,
+    student_name TEXT NOT NULL,
+    class_name TEXT NOT NULL,
+    permission_type TEXT NOT NULL,
+    start_date TEXT NOT NULL,
+    end_date TEXT NOT NULL,
+    total_days INT DEFAULT 1,
+    reason TEXT NOT NULL,
+    photo_base64 TEXT,
+    status TEXT DEFAULT 'Menunggu',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.permissions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read permissions" ON public.permissions FOR SELECT USING (true);
+CREATE POLICY "Allow public insert permissions" ON public.permissions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update permissions" ON public.permissions FOR UPDATE USING (true);
+

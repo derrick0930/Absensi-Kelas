@@ -6,9 +6,9 @@
         android:title="@string/tab_beranda" />
 
     <item
-        android:id="@+id/nav_student_jadwal"
-        android:icon="@drawable/ic_nav_calendar"
-        android:title="@string/tab_jadwal" />
+        android:id="@+id/nav_student_izin"
+        android:icon="@drawable/ic_nav_permit"
+        android:title="Izin" />
 
     <item
         android:id="@+id/nav_student_riwayat"

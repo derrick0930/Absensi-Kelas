@@ -71,7 +71,7 @@
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="60dp">
+        android:layout_marginBottom="64dp">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
@@ -473,9 +473,9 @@
 
                     </LinearLayout>
 
-                    <!-- TAB 2: JADWAL (FIGMA SISWA - JADWAL) -->
+                    <!-- TAB 2: IZIN (PENGAJUAN & SURAT IZIN SISWA) -->
                     <LinearLayout
-                        android:id="@+id/layoutStudentJadwal"
+                        android:id="@+id/layoutStudentIzin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -484,10 +484,10 @@
                         android:visibility="gone">
 
                         <TextView
-                            android:id="@+id/tvJadwalClassHeader"
+                            android:id="@+id/tvIzinStudentClassHeader"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Kelas XI IPA 2"
+                            android:text="SMKS TARUNA JAYA PRAWIRA TUBAN"
                             android:textColor="@color/hadirku_text_muted"
                             android:textSize="12.5sp" />
 
@@ -495,87 +495,349 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Jadwal pelajaran"
+                            android:text="Pengajuan Izin Siswa"
                             android:textColor="@color/hadirku_text_dark"
                             android:textSize="22sp"
                             android:textStyle="bold" />
 
-                        <!-- Day filter chips -->
-                        <com.google.android.material.chip.ChipGroup
-                            android:id="@+id/chipGroupJadwalDays"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            app:singleSelection="true">
+                            android:layout_marginTop="4dp"
+                            android:text="Ajukan permohonan izin (sakit, acara keluarga, dll). Wajib foto surat izin resmi."
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipJadwalSen"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true"
-                                android:text="Sen"
-                                android:textSize="12sp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipJadwalSel"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Sel"
-                                android:textSize="12sp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipJadwalRab"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Rab"
-                                android:textSize="12sp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipJadwalKam"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Kam"
-                                android:textSize="12sp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipJadwalJum"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Jum"
-                                android:textSize="12sp" />
-                        </com.google.android.material.chip.ChipGroup>
-
-                        <!-- Full Schedule List Container -->
-                        <LinearLayout
-                            android:id="@+id/layoutFullSchedulesContainer"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:orientation="vertical" />
-
-                        <!-- Notice Box (Figma soft mint box) -->
+                        <!-- Card Form Pengajuan Izin -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            app:cardBackgroundColor="@color/hadirku_soft_mint"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="0dp"
-                            app:strokeWidth="0dp">
+                            android:layout_marginTop="16dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="18dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:padding="14dp"
-                                android:text="Absen dibuka 15 menit sebelum jam mapel dimulai dan ditutup sesuai batas yang ditentukan guru."
-                                android:textColor="@color/hadirku_primary"
-                                android:textSize="12sp" />
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Jenis Izin"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/chipGroupIzinType"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    app:singleSelection="true">
+
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipIzinSakit"
+                                        style="@style/Widget.Material3.Chip.Filter"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:checked="true"
+                                        android:text="Sakit"
+                                        android:textSize="12sp" />
+
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipIzinKeluarga"
+                                        style="@style/Widget.Material3.Chip.Filter"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Acara Keluarga"
+                                        android:textSize="12sp" />
+
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/chipIzinPenting"
+                                        style="@style/Widget.Material3.Chip.Filter"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Keperluan Penting"
+                                        android:textSize="12sp" />
+                                </com.google.android.material.chip.ChipGroup>
+
+                                <!-- Alasan / Keterangan -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Alasan / Keterangan Izin"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    app:boxCornerRadiusBottomEnd="10dp"
+                                    app:boxCornerRadiusBottomStart="10dp"
+                                    app:boxCornerRadiusTopEnd="10dp"
+                                    app:boxCornerRadiusTopStart="10dp"
+                                    app:boxStrokeColor="@color/hadirku_primary"
+                                    app:hintEnabled="false">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etIzinReason"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="top"
+                                        android:hint="Tuliskan alasan izin secara rinci..."
+                                        android:lines="2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="12.5sp" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Periode Waktu Izin -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:text="Periode Waktu Izin (Lengkap Tanggal, Bulan &amp; Tahun)"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:orientation="horizontal">
+
+                                    <!-- Tanggal Mulai -->
+                                    <LinearLayout
+                                        android:id="@+id/btnPickIzinStartDate"
+                                        android:layout_width="0dp"
+                                        android:layout_height="46dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/bg_hadirku_input_field"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal"
+                                        android:paddingHorizontal="10dp">
+
+                                        <ImageView
+                                            android:layout_width="18dp"
+                                            android:layout_height="18dp"
+                                            android:src="@drawable/ic_nav_calendar"
+                                            app:tint="@color/hadirku_primary" />
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="Dari Tanggal"
+                                                android:textColor="@color/hadirku_text_muted"
+                                                android:textSize="9.5sp" />
+
+                                            <TextView
+                                                android:id="@+id/tvIzinStartDateDisplay"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="12/02/2026"
+                                                android:textColor="@color/hadirku_text_dark"
+                                                android:textSize="12sp"
+                                                android:textStyle="bold" />
+                                        </LinearLayout>
+                                    </LinearLayout>
+
+                                    <!-- Sampai Tanggal -->
+                                    <LinearLayout
+                                        android:id="@+id/btnPickIzinEndDate"
+                                        android:layout_width="0dp"
+                                        android:layout_height="46dp"
+                                        android:layout_marginStart="6dp"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/bg_hadirku_input_field"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal"
+                                        android:paddingHorizontal="10dp">
+
+                                        <ImageView
+                                            android:layout_width="18dp"
+                                            android:layout_height="18dp"
+                                            android:src="@drawable/ic_nav_calendar"
+                                            app:tint="@color/hadirku_primary" />
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="Sampai Tanggal"
+                                                android:textColor="@color/hadirku_text_muted"
+                                                android:textSize="9.5sp" />
+
+                                            <TextView
+                                                android:id="@+id/tvIzinEndDateDisplay"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="13/02/2026"
+                                                android:textColor="@color/hadirku_text_dark"
+                                                android:textSize="12sp"
+                                                android:textStyle="bold" />
+                                        </LinearLayout>
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <!-- Automatic Duration Conversion Badge -->
+                                <com.google.android.material.card.MaterialCardView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    app:cardBackgroundColor="@color/hadirku_soft_mint"
+                                    app:cardCornerRadius="10dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+
+                                    <TextView
+                                        android:id="@+id/tvIzinDurationBadge"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="8dp"
+                                        android:text="Durasi Izin: 1 Hari (12/02/2026 sampai 13/02/2026)"
+                                        android:textColor="@color/hadirku_primary"
+                                        android:textSize="11.5sp"
+                                        android:textStyle="bold" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <!-- Upload / Foto Surat Izin (Wajib) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:text="Foto Surat Izin Resmi (Wajib)"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/cardCaptureSuratIzin"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    app:cardBackgroundColor="#F9FAFB"
+                                    app:cardCornerRadius="12dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#D1D5DB"
+                                    app:strokeWidth="1.2dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="16dp">
+
+                                        <!-- Preview Image when captured -->
+                                        <ImageView
+                                            android:id="@+id/imgPreviewSuratIzin"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="180dp"
+                                            android:adjustViewBounds="true"
+                                            android:scaleType="fitCenter"
+                                            android:visibility="gone" />
+
+                                        <LinearLayout
+                                            android:id="@+id/layoutPromptFotoSurat"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:gravity="center"
+                                            android:orientation="vertical">
+
+                                            <ImageView
+                                                android:layout_width="36dp"
+                                                android:layout_height="36dp"
+                                                android:src="@drawable/ic_scan_camera"
+                                                app:tint="@color/hadirku_primary" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginTop="6dp"
+                                                android:text="Ambil Foto Surat Izin"
+                                                android:textColor="@color/hadirku_primary"
+                                                android:textSize="13sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginTop="2dp"
+                                                android:text="Surat dokter atau surat bertandatangan orang tua"
+                                                android:textColor="@color/hadirku_text_muted"
+                                                android:textSize="11sp" />
+                                        </LinearLayout>
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/btnCaptureSuratIzin"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="36dp"
+                                            android:layout_marginTop="8dp"
+                                            android:backgroundTint="@color/hadirku_primary"
+                                            android:text="Buka Kamera"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp"
+                                            android:textStyle="bold"
+                                            app:cornerRadius="18dp" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <!-- Submit Button -->
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnSubmitIzin"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:layout_marginTop="16dp"
+                                    android:background="@drawable/bg_hadirku_primary_btn"
+                                    android:text="Kirim Pengajuan Izin"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    app:backgroundTint="@null"
+                                    app:cornerRadius="12dp" />
+                            </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Header Riwayat Izin -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:text="Riwayat Pengajuan Izin Saya"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <!-- Container Riwayat Izin -->
+                        <LinearLayout
+                            android:id="@+id/layoutStudentIzinHistoryContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical" />
 
                     </LinearLayout>
 
@@ -866,7 +1128,7 @@
                                         android:background="#ECFDF5"
                                         android:paddingHorizontal="8dp"
                                         android:paddingVertical="3dp"
-                                        android:text="✓ Kartu terverifikasi"
+                                        android:text="Kartu terverifikasi"
                                         android:textColor="#059669"
                                         android:textSize="11sp"
                                         android:textStyle="bold" />
@@ -1192,178 +1454,2404 @@
                 </LinearLayout>
 
                 <!-- ======================================================== -->
-                <!-- 2. TEACHER VIEW                                          -->
+                <!-- 2. TEACHER VIEW (FIGMA GURU - 4 TABS WITH PROFILE)       -->
                 <!-- ======================================================== -->
                 <LinearLayout
                     android:id="@+id/sectionTeacherView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
                     android:visibility="gone">
 
-                    <com.google.android.material.card.MaterialCardView
+                    <!-- TAB 1: GURU - ABSENSI (FIGMA ANDROID COMPACT - 6) -->
+                    <LinearLayout
+                        android:id="@+id/layoutTeacherAbsensi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardBackgroundColor="@color/hadirku_primary"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="3dp">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="visible">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dashboard Guru"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvTeacherHeaderName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Pak Dedi Kurniawan"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Card: Buka Sesi Absensi -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="18dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Buat sesi absensi"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="13.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="Pilih Kelas Target"
+                                    android:textColor="@color/hadirku_text_muted"
+                                    android:textSize="11.5sp" />
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/tilTeacherClassSelection"
+                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    app:boxBackgroundColor="#F9FAFB"
+                                    app:boxCornerRadiusBottomEnd="10dp"
+                                    app:boxCornerRadiusBottomStart="10dp"
+                                    app:boxCornerRadiusTopEnd="10dp"
+                                    app:boxCornerRadiusTopStart="10dp"
+                                    app:boxStrokeColor="@color/hadirku_primary"
+                                    app:boxStrokeWidth="1.2dp"
+                                    app:hintEnabled="false">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/actvTeacherClassTarget"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="48dp"
+                                        android:hint="Pilih kelas"
+                                        android:inputType="none"
+                                        android:paddingHorizontal="12dp"
+                                        android:text="XI IPA 2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Date Picker (Lengkap Hari, Tanggal, Bulan & Tahun seperti DatePicker HTML) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:text="Pilih Tanggal Sesi Presensi (Lengkap Hari, Bulan &amp; Tahun)"
+                                    android:textColor="@color/hadirku_text_muted"
+                                    android:textSize="11.5sp" />
+
+                                <LinearLayout
+                                    android:id="@+id/btnTeacherPickSessionDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="46dp"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_hadirku_input_field"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="12dp">
+
+                                    <ImageView
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:src="@drawable/ic_nav_calendar"
+                                        app:tint="@color/hadirku_primary" />
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherSessionDateDisplay"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="10dp"
+                                        android:layout_weight="1"
+                                        android:text="25/10/2026 - Minggu"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@drawable/bg_button_navy"
+                                        android:backgroundTint="@color/hadirku_soft_mint"
+                                        android:paddingHorizontal="8dp"
+                                        android:paddingVertical="3dp"
+                                        android:text="Ganti Tanggal"
+                                        android:textColor="@color/hadirku_primary"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <!-- Row: Jam Mulai & Sampai Jam -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="6dp"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Jam mulai"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="11.5sp" />
+
+                                        <EditText
+                                            android:id="@+id/etTeacherStartHour"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="40dp"
+                                            android:layout_marginTop="4dp"
+                                            android:background="@drawable/bg_hadirku_input_field"
+                                            android:gravity="center_vertical"
+                                            android:paddingHorizontal="12dp"
+                                            android:text="07:15"
+                                            android:textColor="@color/hadirku_text_dark"
+                                            android:textSize="13sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="6dp"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Sampai jam"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="11.5sp" />
+
+                                        <EditText
+                                            android:id="@+id/etTeacherEndHour"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="40dp"
+                                            android:layout_marginTop="4dp"
+                                            android:background="@drawable/bg_hadirku_input_field"
+                                            android:gravity="center_vertical"
+                                            android:paddingHorizontal="12dp"
+                                            android:text="09:15"
+                                            android:textColor="@color/hadirku_text_dark"
+                                            android:textSize="13sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <!-- Row: Absen Mulai & Absen Hingga -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="6dp"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Absen mulai"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="11.5sp" />
+
+                                        <EditText
+                                            android:id="@+id/etTeacherAttendanceStart"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="40dp"
+                                            android:layout_marginTop="4dp"
+                                            android:background="@drawable/bg_hadirku_input_field"
+                                            android:gravity="center_vertical"
+                                            android:paddingHorizontal="12dp"
+                                            android:text="07:10"
+                                            android:textColor="@color/hadirku_text_dark"
+                                            android:textSize="13sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="6dp"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Absen hingga"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="11.5sp" />
+
+                                        <EditText
+                                            android:id="@+id/etTeacherAttendanceEnd"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="40dp"
+                                            android:layout_marginTop="4dp"
+                                            android:background="@drawable/bg_hadirku_input_field"
+                                            android:gravity="center_vertical"
+                                            android:paddingHorizontal="12dp"
+                                            android:text="08:00"
+                                            android:textColor="@color/hadirku_text_dark"
+                                            android:textSize="13sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <!-- Button Selesai / Buka sesi -->
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnTeacherToggleSessionFigma"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="46dp"
+                                    android:layout_marginTop="14dp"
+                                    android:background="@drawable/bg_hadirku_primary_btn"
+                                    android:text="Selesai"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    app:backgroundTint="@null"
+                                    app:cornerRadius="12dp" />
+
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Header List: Siswa XI IPA 2 · 32 & Ekspor -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="18dp">
+                            android:layout_marginTop="20dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvTeacherClassCountHeader"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Siswa XI IPA 2 · 32"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="13.5sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnTeacherExportExcelHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="34dp"
+                                android:background="@drawable/bg_hadirku_primary_btn"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="0dp"
+                                android:text="Ekspor Excel"
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:textSize="11.5sp"
+                                android:textStyle="bold"
+                                app:backgroundTint="@null"
+                                app:cornerRadius="8dp" />
+                        </LinearLayout>
+
+                        <!-- Student Attendance List Container -->
+                        <LinearLayout
+                            android:id="@+id/layoutTeacherAbsensiStudentList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+
+                        <!-- Section: Daftar Surat Izin Siswa Masuk -->
+                        <LinearLayout
+                            android:id="@+id/layoutTeacherPermitSection"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Surat Izin Siswa Masuk"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvTeacherPermitCountBadge"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_button_navy"
+                                    android:backgroundTint="@color/hadirku_soft_mint"
+                                    android:paddingHorizontal="10dp"
+                                    android:paddingVertical="3dp"
+                                    android:text="0 Surat Izin"
+                                    android:textColor="@color/hadirku_primary"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Manajemen Jam Pelajaran Mengajar"
+                                android:layout_marginTop="2dp"
+                                android:text="Ketuk 'Lihat Surat Izin' untuk memeriksa lampiran surat fisik siswa"
+                                android:textColor="@color/hadirku_text_muted"
+                                android:textSize="11.5sp" />
+
+                            <LinearLayout
+                                android:id="@+id/layoutTeacherPermissionsContainer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="vertical" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- TAB 2: GURU - SISWA (FIGMA GURU - SISWA) -->
+                    <LinearLayout
+                        android:id="@+id/layoutTeacherSiswa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Data Siswa"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Daftar siswa"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Search Bar -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="14dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="12dp">
+
+                                <EditText
+                                    android:id="@+id/etTeacherSearchStudent"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:hint="Cari nama atau NIS"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textColorHint="@color/hadirku_text_muted"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Class Filter Chips -->
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:scrollbars="none">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/chipTeacherClassAll"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:background="@drawable/bg_chip_day_selected"
+                                    android:gravity="center"
+                                    android:paddingHorizontal="14dp"
+                                    android:text="Semua"
+                                    android:textColor="@color/white"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/chipTeacherClassXipa2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_chip_day_unselected"
+                                    android:gravity="center"
+                                    android:paddingHorizontal="14dp"
+                                    android:text="XI IPA 2"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/chipTeacherClassXitkj1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_chip_day_unselected"
+                                    android:gravity="center"
+                                    android:paddingHorizontal="14dp"
+                                    android:text="XI TKJ 1"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/chipTeacherClassXiirpl1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_chip_day_unselected"
+                                    android:gravity="center"
+                                    android:paddingHorizontal="14dp"
+                                    android:text="XII RPL 1"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </HorizontalScrollView>
+
+                        <TextView
+                            android:id="@+id/tvTeacherTotalStudentsCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:text="32 siswa"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <!-- All Students List Container -->
+                        <LinearLayout
+                            android:id="@+id/layoutTeacherAllStudentsContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+
+                    <!-- TAB 3: GURU - LAPORAN (FIGMA GURU - LAPORAN) -->
+                    <LinearLayout
+                        android:id="@+id/layoutTeacherLaporan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rekap kehadiran"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Laporan"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Filter Chips: Mingguan, Bulanan, Semester -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/chipTeacherLaporanMingguan"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_chip_day_selected"
+                                android:gravity="center"
+                                android:paddingHorizontal="16dp"
+                                android:text="Mingguan"
                                 android:textColor="@color/white"
-                                android:textSize="16sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/chipTeacherLaporanBulanan"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Tentukan jam mulai dan jam selesai pelajaran, serta buka sesi presensi untuk siswa."
-                                android:textColor="#CCFFFFFF"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:paddingHorizontal="16dp"
+                                android:text="Bulanan"
+                                android:textColor="@color/hadirku_text_dark"
                                 android:textSize="12sp" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnTeacherAddSchedule"
-                                android:layout_width="match_parent"
-                                android:layout_height="46dp"
-                                android:layout_marginTop="14dp"
-                                android:background="@drawable/bg_hadirku_primary_btn"
-                                android:text="+ Tambah Jadwal Mengajar Baru"
-                                android:textAllCaps="false"
-                                android:textColor="@color/white"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                app:backgroundTint="@null"
-                                app:cornerRadius="10dp" />
+                            <TextView
+                                android:id="@+id/chipTeacherLaporanSemester"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:paddingHorizontal="16dp"
+                                android:text="Semester"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12sp" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
 
-                    <HorizontalScrollView
+                        <!-- Card: Visual Bar Chart -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Kehadiran XI IPA 2"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="13.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="Persentase per minggu"
+                                    android:textColor="@color/hadirku_text_muted"
+                                    android:textSize="11.5sp" />
+
+                                <!-- Vertical Bars Simulation -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="120dp"
+                                    android:layout_marginTop="16dp"
+                                    android:gravity="bottom"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:gravity="bottom|center_horizontal"
+                                        android:orientation="vertical">
+
+                                        <View
+                                            android:layout_width="32dp"
+                                            android:layout_height="80dp"
+                                            android:background="#A7F3D0" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="6dp"
+                                            android:text="W1"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10.5sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:gravity="bottom|center_horizontal"
+                                        android:orientation="vertical">
+
+                                        <View
+                                            android:layout_width="32dp"
+                                            android:layout_height="95dp"
+                                            android:background="#6EE7B7" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="6dp"
+                                            android:text="W2"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10.5sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:gravity="bottom|center_horizontal"
+                                        android:orientation="vertical">
+
+                                        <View
+                                            android:layout_width="32dp"
+                                            android:layout_height="70dp"
+                                            android:background="#34D399" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="6dp"
+                                            android:text="W3"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10.5sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:gravity="bottom|center_horizontal"
+                                        android:orientation="vertical">
+
+                                        <View
+                                            android:layout_width="32dp"
+                                            android:layout_height="105dp"
+                                            android:background="@color/hadirku_primary" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="6dp"
+                                            android:text="W4"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10.5sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Stat Cards Row (3 columns: 92% Kehadiran, 5 Izin/Sakit, 2 Alpa) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:paddingVertical="14dp">
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherLaporanPresentRate"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="92%"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Hadir"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="3dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:paddingVertical="14dp">
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherLaporanPermitCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="5"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Izin / Sakit"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="14dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:paddingVertical="14dp">
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherLaporanAbsentCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Alpa"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Section: Per kelas -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
+                            android:text="Per kelas"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <!-- Class 1: XI IPA 2 -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="XI IPA 2"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvLaporanClass1Percent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="92%"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <ProgressBar
+                                    android:id="@+id/pbLaporanClass1"
+                                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="6dp"
+                                    android:layout_marginTop="6dp"
+                                    android:progress="92"
+                                    android:progressTint="@color/hadirku_primary" />
+
+                                <!-- Class 2: XI TKJ 1 -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="XI TKJ 1"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvLaporanClass2Percent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="89%"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <ProgressBar
+                                    android:id="@+id/pbLaporanClass2"
+                                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="6dp"
+                                    android:layout_marginTop="6dp"
+                                    android:progress="89"
+                                    android:progressTint="#0D9488" />
+
+                                <!-- Class 3: XII RPL 1 -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="XII RPL 1"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvLaporanClass3Percent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="94%"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <ProgressBar
+                                    android:id="@+id/pbLaporanClass3"
+                                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="6dp"
+                                    android:layout_marginTop="6dp"
+                                    android:progress="94"
+                                    android:progressTint="@color/hadirku_primary" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnTeacherExportLaporanFull"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/bg_hadirku_primary_btn"
+                            android:text="Ekspor Excel Laporan"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:backgroundTint="@null"
+                            app:cornerRadius="12dp" />
+
+                    </LinearLayout>
+
+                    <!-- TAB 4: GURU - PROFIL (FIGMA GURU - PROFIL) -->
+                    <LinearLayout
+                        android:id="@+id/layoutTeacherProfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:scrollbars="none">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Akun Guru"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Profil"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Profile Header Card with Avatar Initials -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:id="@+id/tvTeacherProfilInitials"
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:background="@drawable/bg_initials_circle"
+                                    android:gravity="center"
+                                    android:text="DK"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherProfilName"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Pak Dedi Kurniawan, S.Pd."
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherProfilNip"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="NIP 198507122010011005 · Guru Matematika"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="6dp"
+                                        android:background="#ECFDF5"
+                                        android:paddingHorizontal="8dp"
+                                        android:paddingVertical="3dp"
+                                        android:text="Guru Terverifikasi"
+                                        android:textColor="#059669"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Section: Informasi Mengajar -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Informasi Mengajar"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Mata Pelajaran"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherProfilMapel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Matematika Wajib"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="10dp"
+                                    android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Kelas Ajar"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherProfilKelasAjar"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="XI IPA 2, XI TKJ 1, XII RPL 1"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="10dp"
+                                    android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Total Jam / Minggu"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherProfilTotalJam"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="24 Jam Pelajaran"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Section: Akun -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Akun"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Username"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:id="@+id/tvTeacherProfilUsername"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="guru_dedi"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="10dp"
+                                    android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Password"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="••••••••"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginVertical="10dp"
+                                    android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Status"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="13sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Aktif"
+                                        android:textColor="#059669"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnTeacherChangePassword"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="20dp"
+                            android:text="Ganti password"
+                            android:textAllCaps="false"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1.2dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnTeacherLogout"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Keluar"
+                            android:textAllCaps="false"
+                            android:textColor="@color/hadirku_red"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp"
+                            app:strokeColor="@color/hadirku_red_light"
+                            app:strokeWidth="1.2dp" />
+
+                    </LinearLayout>
+
+                    <!-- Hidden container to keep legacy IDs safe -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnTeacherAddSchedule"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <com.google.android.material.chip.ChipGroup
                             android:id="@+id/chipGroupTeacherClassFilter"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:singleSelection="true">
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipTeacherFilterAll"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true"
-                                android:text="Semua Jadwal"
-                                android:textSize="12sp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipTeacherFilterTkj1"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="XI IPA 2"
-                                android:textSize="12sp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipTeacherFilterTkj2"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="XI TKJ 1"
-                                android:textSize="12sp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipTeacherFilterRpl"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="XII RPL 1"
-                                android:textSize="12sp" />
+                            android:layout_height="wrap_content">
+                            <com.google.android.material.chip.Chip android:id="@+id/chipTeacherFilterAll" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                            <com.google.android.material.chip.Chip android:id="@+id/chipTeacherFilterTkj1" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                            <com.google.android.material.chip.Chip android:id="@+id/chipTeacherFilterTkj2" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                            <com.google.android.material.chip.Chip android:id="@+id/chipTeacherFilterRpl" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                         </com.google.android.material.chip.ChipGroup>
-                    </HorizontalScrollView>
 
-                    <LinearLayout
-                        android:id="@+id/layoutTeacherSchedulesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical" />
+                        <LinearLayout
+                            android:id="@+id/layoutTeacherSchedulesContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <!-- ======================================================== -->
-                <!-- 3. ADMIN VIEW                                            -->
+                <!-- 3. ADMIN VIEW (FIGMA ADMIN - 5 TABS WITH PROFILE)        -->
                 <!-- ======================================================== -->
                 <LinearLayout
                     android:id="@+id/sectionAdminView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
                     android:visibility="gone">
 
-                    <com.google.android.material.card.MaterialCardView
+                    <!-- TAB 1: ADMIN - DASHBOARD (FIGMA ANDROID COMPACT - 7) -->
+                    <LinearLayout
+                        android:id="@+id/layoutAdminDashboard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="2dp">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dashboard Admin"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Pusat kontrol sekolah"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Row: 2 Big Stats (94% Kehadiran & 12 Tidak hadir) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="94%"
+                                        android:textColor="@color/hadirku_primary"
+                                        android:textSize="26sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Kehadiran sekolah"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="12"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="26sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Tidak hadir hari ini"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Monitoring presensi kelas -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Monitoring presensi kelas"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <!-- XI IPA 2 -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XI IPA 2" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="97%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="97" android:progressTint="@color/hadirku_primary" />
+
+                                <!-- XI TKJ 1 -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XI TKJ 1" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="92%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="92" android:progressTint="#0D9488" />
+
+                                <!-- XII RPL 1 -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XII RPL 1" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="89%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="89" android:progressTint="#F59E0B" />
+
+                                <!-- XII IPA 1 -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XII IPA 1" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="76%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="76" android:progressTint="#EF4444" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Kelola master data chips -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Kelola master data"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Pusat Kontrol HadirKu"
-                                android:textColor="@color/hadirku_primary"
-                                android:textSize="16sp"
+                                android:id="@+id/btnAdminQuickGuru"
+                                android:layout_width="0dp"
+                                android:layout_height="38dp"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:text="Guru"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12.5sp"
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="SMKS Taruna Jaya Prawira Tuban"
-                                android:textColor="@color/hadirku_text_muted"
-                                android:textSize="12sp" />
+                                android:id="@+id/btnAdminQuickSiswa"
+                                android:layout_width="0dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="3dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:text="Siswa"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12.5sp"
+                                android:textStyle="bold" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnAdminAddSchedule"
-                                android:layout_width="match_parent"
-                                android:layout_height="46dp"
-                                android:layout_marginTop="14dp"
-                                android:background="@drawable/bg_hadirku_primary_btn"
-                                android:text="+ Buat Jadwal Pelajaran Sekolah"
-                                android:textAllCaps="false"
-                                android:textColor="@color/white"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                app:backgroundTint="@null"
-                                app:cornerRadius="10dp" />
+                            <TextView
+                                android:id="@+id/btnAdminQuickJadwal"
+                                android:layout_width="0dp"
+                                android:layout_height="38dp"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:text="Jadwal"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12.5sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
 
+                        <!-- Section: Aktivitas pengguna -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Aktivitas pengguna"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/layoutAdminRecentActivityContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+
+                    <!-- TAB 2: ADMIN - PRESENSI (FIGMA ADMIN - PRESENSI) -->
                     <LinearLayout
-                        android:id="@+id/layoutAdminSchedulesContainer"
+                        android:id="@+id/layoutAdminPresensi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical" />
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Monitoring"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Presensi sekolah"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Stats Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="94%"
+                                        android:textColor="@color/hadirku_primary"
+                                        android:textSize="26sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Kehadiran"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="12"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="26sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Tidak hadir"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Filter Chips: Hari ini, Minggu ini, Semester ini -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/chipAdminPresensiHariIni"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_chip_day_selected"
+                                android:gravity="center"
+                                android:paddingHorizontal="16dp"
+                                android:text="Hari ini"
+                                android:textColor="@color/white"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/chipAdminPresensiMingguIni"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:paddingHorizontal="16dp"
+                                android:text="Minggu ini"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/chipAdminPresensiSemesterIni"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:paddingHorizontal="16dp"
+                                android:text="Semester ini"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Presensi per kelas"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- List of class attendance -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XI IPA 1" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="97%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="97" android:progressTint="@color/hadirku_primary" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XI IPA 2" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="92%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="92" android:progressTint="#0D9488" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XI IPA 3" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="92%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="92" android:progressTint="#0D9488" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="XII IPA 1" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="88%" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <ProgressBar style="@style/Widget.AppCompat.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:progress="88" android:progressTint="#F59E0B" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Belum absen sekarang"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- Student items pending -->
+                        <LinearLayout
+                            android:id="@+id/layoutAdminPendingAttendanceList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+
+                    <!-- TAB 3: ADMIN - MASTER (FIGMA ADMIN - MASTER / KELOLA DATA) -->
+                    <LinearLayout
+                        android:id="@+id/layoutAdminMaster"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Master data"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Kelola data"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Grid 6 Stats Cards: 24 Guru, 412 Siswa, 14 Kelas, 96 Jadwal, 18 Mapel, 100 m Lokasi sekolah -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+                                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24" android:textColor="@color/hadirku_text_dark" android:textSize="22sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Guru" android:textColor="@color/hadirku_text_muted" android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+                                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="412" android:textColor="@color/hadirku_text_dark" android:textSize="22sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Siswa" android:textColor="@color/hadirku_text_muted" android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Row 2 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+                                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="14" android:textColor="@color/hadirku_text_dark" android:textSize="22sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Kelas" android:textColor="@color/hadirku_text_muted" android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+                                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="96" android:textColor="@color/hadirku_text_dark" android:textSize="22sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Jadwal" android:textColor="@color/hadirku_text_muted" android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Row 3 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+                                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="18" android:textColor="@color/hadirku_text_dark" android:textSize="22sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Mapel" android:textColor="@color/hadirku_text_muted" android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0.5dp"
+                                app:strokeColor="@color/hadirku_gray_border"
+                                app:strokeWidth="1dp">
+                                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="100 m" android:textColor="@color/hadirku_text_dark" android:textSize="22sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Lokasi sekolah" android:textColor="@color/hadirku_text_muted" android:textSize="12sp" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Notice Card: Perlu diperiksa -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:cardBackgroundColor="#FEF3C7"
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="#FDE68A"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Perlu diperiksa"
+                                    android:textColor="#B45309"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="2 siswa belum punya kartu, 1 nomor lokasi belum valid"
+                                    android:textColor="#92400E"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Button: Tambah data baru -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAdminAddNewDataMaster"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/bg_hadirku_primary_btn"
+                            android:text="Tambah data baru"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:backgroundTint="@null"
+                            app:cornerRadius="12dp" />
+
+                    </LinearLayout>
+
+                    <!-- TAB 4: ADMIN - AKTIVITAS (FIGMA ADMIN - AKTIVITAS) -->
+                    <LinearLayout
+                        android:id="@+id/layoutAdminAktivitas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Log sistem"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Aktivitas pengguna"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Filter Chips: Semua, Guru, Siswa, Admin -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/chipAdminActivityAll"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_chip_day_selected"
+                                android:gravity="center"
+                                android:paddingHorizontal="14dp"
+                                android:text="Semua"
+                                android:textColor="@color/white"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/chipAdminActivityGuru"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:paddingHorizontal="14dp"
+                                android:text="Guru"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/chipAdminActivitySiswa"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:paddingHorizontal="14dp"
+                                android:text="Siswa"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/chipAdminActivityAdmin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_chip_day_unselected"
+                                android:gravity="center"
+                                android:paddingHorizontal="14dp"
+                                android:text="Admin"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- Activity items container -->
+                        <LinearLayout
+                            android:id="@+id/layoutAdminFullActivityContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+
+                    <!-- TAB 5: ADMIN - PROFIL (FIGMA ADMIN - PROFIL) -->
+                    <LinearLayout
+                        android:id="@+id/layoutAdminProfil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="28dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Akun Administrator"
+                            android:textColor="@color/hadirku_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Profil"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <!-- Profile Header Card -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:background="@drawable/bg_initials_circle"
+                                    android:gravity="center"
+                                    android:text="AD"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Administrator Sistem"
+                                        android:textColor="@color/hadirku_text_dark"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="NIP 197801012005011001 · Pengelola HadirKu"
+                                        android:textColor="@color/hadirku_text_muted"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="6dp"
+                                        android:background="#ECFDF5"
+                                        android:paddingHorizontal="8dp"
+                                        android:paddingVertical="3dp"
+                                        android:text="Admin Terverifikasi"
+                                        android:textColor="#059669"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Informasi Sistem -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Informasi Sistem"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Nama Sekolah" android:textColor="@color/hadirku_text_muted" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SMKS Taruna Jaya Prawira" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="10dp" android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Versi Aplikasi" android:textColor="@color/hadirku_text_muted" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="v2.4.0 (HadirKu Stable)" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="10dp" android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Database" android:textColor="@color/hadirku_text_muted" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Supabase Cloud PostgreSQL" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Akun -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Akun"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0.5dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Username" android:textColor="@color/hadirku_text_muted" android:textSize="13sp" />
+                                    <TextView android:id="@+id/tvAdminProfilUsername" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="admin" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="10dp" android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Password" android:textColor="@color/hadirku_text_muted" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="••••••••" android:textColor="@color/hadirku_text_dark" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="10dp" android:background="#F3F4F6" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Role" android:textColor="@color/hadirku_text_muted" android:textSize="13sp" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Super Administrator" android:textColor="#059669" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAdminChangePassword"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="20dp"
+                            android:text="Ganti password"
+                            android:textAllCaps="false"
+                            android:textColor="@color/hadirku_text_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp"
+                            app:strokeColor="@color/hadirku_gray_border"
+                            app:strokeWidth="1.2dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAdminLogout"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Keluar"
+                            android:textAllCaps="false"
+                            android:textColor="@color/hadirku_red"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="12dp"
+                            app:strokeColor="@color/hadirku_red_light"
+                            app:strokeWidth="1.2dp" />
+
+                    </LinearLayout>
+
+                    <!-- Hidden container to keep legacy IDs safe -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAdminAddSchedule"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <LinearLayout
+                            android:id="@+id/layoutAdminSchedulesContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -1374,14 +3862,53 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavStudent"
         android:layout_width="match_parent"
-        android:layout_height="62dp"
+        android:layout_height="64dp"
         android:layout_gravity="bottom"
         android:background="@color/white"
-        app:elevation="8dp"
+        app:backgroundTint="@color/white"
+        app:elevation="10dp"
+        app:itemActiveIndicatorStyle="@null"
+        app:itemRippleColor="@null"
         app:itemIconSize="22dp"
         app:itemIconTint="@color/color_nav_item"
         app:itemTextColor="@color/color_nav_item"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_bottom_nav_student" />
+
+    <!-- Bottom Navigation Bar for Teacher (Figma Dashboard, Siswa, Laporan, Profil) -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavTeacher"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        android:visibility="gone"
+        app:backgroundTint="@color/white"
+        app:elevation="10dp"
+        app:itemActiveIndicatorStyle="@null"
+        app:itemRippleColor="@null"
+        app:itemIconSize="22dp"
+        app:itemIconTint="@color/color_nav_item"
+        app:itemTextColor="@color/color_nav_item"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_bottom_nav_teacher" />
+
+    <!-- Bottom Navigation Bar for Admin (Figma Dashboard, Presensi, Master, Aktivitas, Profil) -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        android:visibility="gone"
+        app:backgroundTint="@color/white"
+        app:elevation="10dp"
+        app:itemActiveIndicatorStyle="@null"
+        app:itemRippleColor="@null"
+        app:itemIconSize="20dp"
+        app:itemIconTint="@color/color_nav_item"
+        app:itemTextColor="@color/color_nav_item"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_bottom_nav_admin" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

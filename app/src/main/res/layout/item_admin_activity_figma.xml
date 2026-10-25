@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0.5dp"
+    app:strokeColor="@color/hadirku_gray_border"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="12dp">
+
+        <!-- Timestamp Pill -->
+        <TextView
+            android:id="@+id/tvActivityTimestamp"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="07:41"
+            android:textColor="@color/hadirku_text_muted"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- Activity Description -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvActivityTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rina A. absen Matematika"
+                android:textColor="@color/hadirku_text_dark"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvActivitySubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Siswa · XI IPA 2 · Tepat Waktu"
+                android:textColor="@color/hadirku_text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Role Badge -->
+        <TextView
+            android:id="@+id/tvActivityRoleBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#EFF6FF"
+            android:paddingHorizontal="9dp"
+            android:paddingVertical="3.5dp"
+            android:text="Siswa"
+            android:textColor="#2563EB"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

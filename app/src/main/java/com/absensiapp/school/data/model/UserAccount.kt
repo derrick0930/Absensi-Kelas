@@ -6,6 +6,7 @@ data class UserAccount(
     val id: String, // NISN for student, NIP for teacher, username for admin
     val dbId: Long? = null, // Auto-increment integer id from database (BIGSERIAL)
     val nisn: String? = null, // Dedicated NISN column in database
+    val username: String? = null, // Dedicated username column in database
     val name: String,
     val role: UserRole,
     val passwordHash: String,

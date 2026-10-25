@@ -14,7 +14,7 @@ data class AttendanceSchedule(
     val dayName: String = "Senin",
     val room: String = "Lab Komputer 2",
     var isOpenForAttendance: Boolean = true,
-    val sessionDate: String = "Hari ini"
+    var sessionDate: String = "Hari ini"
 ) : Serializable {
     val periodDescription: String
         get() = if (periodStart == periodEnd) "Jam Ke-$periodStart" else "Jam Ke-$periodStart s/d $periodEnd"

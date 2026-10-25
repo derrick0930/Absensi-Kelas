@@ -1,17 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.AbsensiAPP" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primary_navy</item>
-        <item name="colorPrimaryVariant">@color/primary_navy_dark</item>
+    <!-- Base application theme strictly light to match Figma design -->
+    <style name="Theme.AbsensiAPP" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/hadirku_primary</item>
+        <item name="colorPrimaryVariant">@color/hadirku_primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/accent_orange</item>
-        <item name="colorSecondaryVariant">@color/accent_orange_dark</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/primary_navy_dark</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/hadirku_yellow</item>
+        <item name="colorSecondaryVariant">@color/hadirku_yellow_dark</item>
+        <item name="colorOnSecondary">@color/hadirku_text_dark</item>
+        <!-- Background & Surface -->
+        <item name="android:colorBackground">@color/hadirku_bg</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/hadirku_text_dark</item>
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/hadirku_bg</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:windowLightNavigationBar">true</item>
     </style>

@@ -171,17 +171,6 @@
                             android:text="Mencari koordinat kelas..."
                             android:textColor="@color/hadirku_text_muted"
                             android:textSize="11.5sp" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSimulateLocation"
-                            style="@style/Widget.Material3.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:layout_marginTop="2dp"
-                            android:paddingHorizontal="4dp"
-                            android:text="⚡ Simulasi Di Dalam Kelas (Demo)"
-                            android:textColor="@color/hadirku_primary"
-                            android:textSize="11sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

@@ -14,9 +14,9 @@ import androidx.core.content.ContextCompat
 object SchoolLocationHelper {
 
     // SMKS Taruna Jaya Prawira Tuban coordinates
-    // Jl. Dr. Wahidin Sudirohusodo No. 77, Tuban, Jawa Timur
-    const val SCHOOL_LATITUDE = -6.89972
-    const val SCHOOL_LONGITUDE = 112.04944
+    // Jl. Dr. Wahidin Sudirohusodo, Kelurahan Sidorejo, Tuban, Jawa Timur
+    const val SCHOOL_LATITUDE = -6.899605
+    const val SCHOOL_LONGITUDE = 112.0501433
     const val MAX_ALLOWED_RADIUS_METERS = 250f // 250 meter radius
     const val DEFAULT_CLASS_RADIUS_METERS = 50f // 50 meter radius kelas
 
