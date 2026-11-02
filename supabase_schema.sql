@@ -121,9 +121,11 @@ CREATE POLICY "Allow public read teachers" ON public.teachers FOR SELECT USING (
 CREATE POLICY "Allow public read schedules" ON public.schedules FOR SELECT USING (true);
 CREATE POLICY "Allow public insert schedules" ON public.schedules FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow public update schedules" ON public.schedules FOR UPDATE USING (true);
+CREATE POLICY "Allow public delete schedules" ON public.schedules FOR DELETE USING (true);
 
 CREATE POLICY "Allow public read attendance" ON public.attendance FOR SELECT USING (true);
 CREATE POLICY "Allow public insert attendance" ON public.attendance FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public delete attendance" ON public.attendance FOR DELETE USING (true);
 
 -- 7. TABEL SURAT IZIN SISWA (PERMISSIONS)
 CREATE TABLE IF NOT EXISTS public.permissions (

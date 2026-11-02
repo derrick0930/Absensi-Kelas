@@ -38,6 +38,14 @@ data class SchoolClass(
                 radiusMeters = 50f
             ),
             SchoolClass(
+                id = "cls_xi_rpl_1",
+                name = "XI RPL 1",
+                room = "Lab Software 1",
+                latitude = -6.899585,
+                longitude = 112.0501633,
+                radiusMeters = 50f
+            ),
+            SchoolClass(
                 id = "cls_xii_rpl_1",
                 name = "XII RPL 1",
                 room = "Lab Software 3",

@@ -42,6 +42,24 @@ class AppRepository private constructor(context: Context) {
     }
 
     private fun loadData() {
+        val hasPurgedMockData = prefs.getBoolean("has_purged_mock_seed_v7", false)
+        if (!hasPurgedMockData) {
+            prefs.edit()
+                .remove(KEY_USERS)
+                .remove(KEY_STUDENT_CARDS)
+                .remove(KEY_SCHEDULES)
+                .remove(KEY_ATTENDANCE)
+                .remove(KEY_PERMISSIONS)
+                .remove(KEY_CURRENT_USER)
+                .putBoolean("has_purged_mock_seed_v7", true)
+                .apply()
+            usersMap.clear()
+            studentCardsMap.clear()
+            schedulesList.clear()
+            attendanceList.clear()
+            permissionsList.clear()
+        }
+
         val usersJson = prefs.getString(KEY_USERS, null)
         if (!usersJson.isNullOrEmpty()) {
             val type = object : TypeToken<Map<String, UserAccount>>() {}.type
@@ -90,156 +108,73 @@ class AppRepository private constructor(context: Context) {
             classesList.addAll(SchoolClass.DEFAULT_CLASSES)
         }
 
-        // Seed real student accounts
-        val initialStudents = listOf(
-            StudentCardData("2410031", "Rina Aulia Putri", "Tuban, 15 Juli 2009", "Jl. Basuki Rahmat No. 45 Tuban", "Islam", "O", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI IPA 2"),
-            StudentCardData("2410032", "Bagas Prasetyo", "Tuban, 22 Agustus 2009", "Jl. Veteran No. 12 Tuban", "Islam", "B", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI IPA 2"),
-            StudentCardData("2410033", "Citra Maharani", "Tuban, 10 Maret 2009", "Jl. Panglima Sudirman No. 8 Tuban", "Islam", "A", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI IPA 2"),
-            StudentCardData("2410034", "Dimas Anggara", "Tuban, 5 Januari 2009", "Jl. Hayam Wuruk No. 19 Tuban", "Islam", "AB", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI IPA 2"),
-            StudentCardData("2410035", "Eka Fitriani", "Tuban, 18 September 2009", "Jl. Gajah Mada No. 33 Tuban", "Islam", "O", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI IPA 2"),
-            StudentCardData("2410036", "Fajar Hidayat", "Tuban, 12 Desember 2009", "Jl. Letda Sucipto No. 70 Tuban", "Islam", "B", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI IPA 2"),
-            StudentCardData("2410041", "Gilang Ramadhan", "Tuban, 3 April 2009", "Jl. Pramuka No. 14 Tuban", "Islam", "A", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI TKJ 1"),
-            StudentCardData("2410042", "Budi Santoso", "Tuban, 29 Mei 2009", "Jl. Diponegoro No. 25 Tuban", "Islam", "O", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XI TKJ 1"),
-            StudentCardData("2410051", "Hana Lestari", "Tuban, 14 Juli 2008", "Jl. Ronggolawe No. 3 Tuban", "Islam", "B", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XII RPL 1"),
-            StudentCardData("2410052", "Kevin Pratama", "Tuban, 20 November 2008", "Jl. Manunggal No. 56 Tuban", "Islam", "O", "SMKS TARUNA JAYA PRAWIRA TUBAN", "YAYASAN PENDIDIKAN TARUNA JAYA PRAWIRA", "Bambang Kusdiyanto, ST.M.Pd", "JL. DR. WAHIDIN SUDIROHUSODO TUBAN", "XII RPL 1")
-        )
-
-        for (st in initialStudents) {
-            studentCardsMap[st.nisn] = st
-            val uName = when (st.nisn) {
-                "2410031" -> "rina.xipa2"
-                "2410032" -> "bagas.xipa2"
-                "2410033" -> "citra.xipa2"
-                else -> null
-            }
-            if (!usersMap.containsKey(st.nisn)) {
-                val studentAcc = UserAccount(
-                    id = st.nisn,
-                    nisn = st.nisn,
-                    username = uName,
-                    name = st.name,
-                    role = UserRole.STUDENT,
-                    passwordHash = "12345678",
-                    cardData = st,
-                    isBiometricEnrolled = true,
-                    isFaceEnrolled = true
-                )
-                usersMap[st.nisn] = studentAcc
-                if (uName != null) {
-                    usersMap[uName] = studentAcc
-                }
-            }
-        }
-        if (!usersMap.containsKey("rina.xipa2") && usersMap.containsKey("2410031")) {
-            usersMap["rina.xipa2"] = usersMap["2410031"]!!
-        }
-
-        // Teacher accounts configured in database
-        if (!usersMap.containsKey("1985031201")) {
-            usersMap["1985031201"] = UserAccount(
-                id = "1985031201",
-                name = "Pak Budi Santoso, S.Kom",
-                role = UserRole.TEACHER,
-                passwordHash = "guru123"
-            )
-        }
-        if (!usersMap.containsKey("1990082402")) {
-            usersMap["1990082402"] = UserAccount(
-                id = "1990082402",
-                name = "Bu Siti Rahmawati, M.Pd",
-                role = UserRole.TEACHER,
-                passwordHash = "guru123"
-            )
-        }
-        if (!usersMap.containsKey("1982051001")) {
-            val teacherAcc = UserAccount(
-                id = "1982051001",
-                username = "guru_dedi",
-                name = "Pak Dedi Kurniawan",
-                role = UserRole.TEACHER,
-                passwordHash = "guru123"
-            )
-            usersMap["1982051001"] = teacherAcc
-            usersMap["guru_dedi"] = teacherAcc
-        }
-        if (!usersMap.containsKey("guru_dedi") && usersMap.containsKey("1982051001")) {
-            usersMap["guru_dedi"] = usersMap["1982051001"]!!
-        }
-
-        // Admin account configured in database
+        // Official fallback accounts matching Supabase remote database in case of offline launch
         if (!usersMap.containsKey("admin")) {
-            usersMap["admin"] = UserAccount(
+            val adminAcc = UserAccount(
                 id = "admin",
                 username = "admin",
-                name = "Administrator HadirKu",
+                name = "ADMINISTRATOR",
                 role = UserRole.ADMIN,
-                passwordHash = "admin123"
+                passwordHash = "Admin123"
             )
+            usersMap["admin"] = adminAcc
         }
 
-        val hasSeeded = prefs.getBoolean("has_seeded_initial_data_v5", false)
-        if (hasSeeded) {
-            saveAll()
-            return
+        if (!usersMap.containsKey("budi.santoso") && !usersMap.containsKey("198501012010011001")) {
+            val teacherAcc = UserAccount(
+                id = "198501012010011001",
+                username = "budi.santoso",
+                nisn = "198501012010011001",
+                name = "BUDI SANTOSO, S.Pd",
+                role = UserRole.TEACHER,
+                passwordHash = "Guru123"
+            )
+            usersMap["budi.santoso"] = teacherAcc
+            usersMap["198501012010011001"] = teacherAcc
         }
 
-        val cal = Calendar.getInstance()
-        cal.firstDayOfWeek = Calendar.MONDAY
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val dateMon = dateFormat.format(cal.time)
-        cal.add(Calendar.DAY_OF_MONTH, 1)
-        val dateTue = dateFormat.format(cal.time)
-        cal.add(Calendar.DAY_OF_MONTH, 1)
-        val dateWed = dateFormat.format(cal.time)
-        cal.add(Calendar.DAY_OF_MONTH, 1)
-        val dateThu = dateFormat.format(cal.time)
-        cal.add(Calendar.DAY_OF_MONTH, 1)
-        val dateFri = dateFormat.format(cal.time)
+        if (!usersMap.containsKey("siti.nurhaliza") && !usersMap.containsKey("198703152011012002")) {
+            val teacherAcc = UserAccount(
+                id = "198703152011012002",
+                username = "siti.nurhaliza",
+                nisn = "198703152011012002",
+                name = "SITI NURHALIZA, S.Kom",
+                role = UserRole.TEACHER,
+                passwordHash = "Guru123"
+            )
+            usersMap["siti.nurhaliza"] = teacherAcc
+            usersMap["198703152011012002"] = teacherAcc
+        }
 
-        // Real schedules accurately divided by Day (Senin, Selasa, Rabu, Kamis, Jumat) and specific date
-        schedulesList.clear()
-        val realSchedules = listOf(
-            // --- SENIN ---
-            AttendanceSchedule("sch_sen_01", "XI IPA 2", "Bahasa Indonesia", "1978010101", "Pak Joko Santoso", 1, 1, "07:00 - 07:45 WIB", "Senin", "R. 12", false, dateMon),
-            AttendanceSchedule("sch_sen_02", "XI IPA 2", "Matematika", "1982051001", "Pak Dedi Kurniawan", 2, 3, "07:45 - 09:15 WIB", "Senin", "R. 12", true, dateMon),
-            AttendanceSchedule("sch_sen_03", "XI IPA 2", "Fisika", "1987091201", "Bu Ratna Ningrum", 4, 5, "09:30 - 11:00 WIB", "Senin", "Lab Fisika", false, dateMon),
-            AttendanceSchedule("sch_sen_04", "XI IPA 2", "Bahasa Inggris", "1991040501", "Pak Arif Hidayat", 6, 7, "11:00 - 12:30 WIB", "Senin", "R. 12", false, dateMon),
-            AttendanceSchedule("sch_sen_05", "XI IPA 2", "Kimia", "1989021401", "Bu Ratna Dewi", 8, 9, "13:00 - 14:30 WIB", "Senin", "Lab Kimia", false, dateMon),
-
-            // --- SELASA ---
-            AttendanceSchedule("sch_sel_01", "XI IPA 2", "Biologi", "1984031101", "Bu Endang Sulistyo", 1, 2, "07:15 - 08:45 WIB", "Selasa", "Lab Biologi", true, dateTue),
-            AttendanceSchedule("sch_sel_02", "XI IPA 2", "Sejarah Indonesia", "1986112001", "Pak Agus Wibowo", 3, 4, "08:45 - 10:15 WIB", "Selasa", "R. 12", false, dateTue),
-            AttendanceSchedule("sch_sel_03", "XI TKJ 1", "Administrasi Server Jaringan", "1985031201", "Pak Budi Santoso, S.Kom", 1, 2, "07:00 - 08:30 WIB", "Selasa", "Lab Komputer 1", true, dateTue),
-
-            // --- RABU ---
-            AttendanceSchedule("sch_rab_01", "XI IPA 2", "Seni Budaya", "1992011501", "Bu Maya Astuti", 1, 2, "07:15 - 08:45 WIB", "Rabu", "R. Seni", false, dateWed),
-            AttendanceSchedule("sch_rab_02", "XI IPA 2", "Pendidikan Jasmani", "1980061201", "Pak Hendro Kusumo", 3, 4, "09:00 - 10:30 WIB", "Rabu", "Lapangan Utama", false, dateWed),
-            AttendanceSchedule("sch_rab_03", "XII RPL 1", "Pemodelan Perangkat Lunak", "1985031201", "Pak Budi Santoso, S.Kom", 1, 3, "07:15 - 09:30 WIB", "Rabu", "Lab RPL", true, dateWed),
-
-            // --- KAMIS ---
-            AttendanceSchedule("sch_kam_01", "XI IPA 2", "Pendidikan Agama Islam", "1975082101", "Pak H. Ahmad Fauzi", 1, 2, "07:15 - 08:45 WIB", "Kamis", "R. 12", true, dateThu),
-            AttendanceSchedule("sch_kam_02", "XI IPA 2", "Pendidikan Pancasila & Kewarganegaraan", "1988100501", "Bu Sri Wahyuni", 3, 4, "08:45 - 10:15 WIB", "Kamis", "R. 12", false, dateThu),
-
-            // --- JUMAT ---
-            AttendanceSchedule("sch_jum_01", "XI IPA 2", "Matematika Peminatan", "1982051001", "Pak Dedi Kurniawan", 1, 2, "07:00 - 08:30 WIB", "Jumat", "R. 12", true, dateFri),
-            AttendanceSchedule("sch_jum_02", "XI TKJ 1", "Teknologi Layanan Jaringan", "1990082402", "Bu Siti Rahmawati, M.Pd", 1, 2, "07:00 - 08:30 WIB", "Jumat", "Lab Komputer 2", true, dateFri)
+        // Real official student matching Supabase database
+        val officialStudentCard = StudentCardData(
+            nisn = "0095687758",
+            name = "DERRICK VITO RENGGADITA",
+            birthPlaceDate = "Tuban, 23 Februari 2009",
+            address = "DS. Jarorejo RT.03/02 Kerek - Tuban",
+            religion = "Islam",
+            bloodType = "A",
+            schoolName = "SMKS TARUNA JAYA PRAWIRA TUBAN",
+            className = "XI RPL 1",
+            headmasterName = "Bambang Kusdiyanto, ST.M.Pd"
         )
-        schedulesList.addAll(realSchedules)
 
-        // Seed initial attendance records for real student participation
-        if (attendanceList.isEmpty()) {
-            val now = System.currentTimeMillis()
-            attendanceList.add(AttendanceRecord(UUID.randomUUID().toString(), "sch_sen_02", "2410031", "Rina Aulia Putri", "XI IPA 2", now - 3600000, AttendanceStatus.PRESENT, true, true, 8, "3-Lapis", "Hadir Tepat Waktu"))
-            attendanceList.add(AttendanceRecord(UUID.randomUUID().toString(), "sch_sen_02", "2410032", "Bagas Prasetyo", "XI IPA 2", now - 3400000, AttendanceStatus.PRESENT, true, true, 12, "3-Lapis", "Hadir Tepat Waktu"))
-            attendanceList.add(AttendanceRecord(UUID.randomUUID().toString(), "sch_sen_02", "2410033", "Citra Maharani", "XI IPA 2", now - 3200000, AttendanceStatus.PERMITTED, false, false, 0, "Manual", "Surat Keterangan Izin"))
-            attendanceList.add(AttendanceRecord(UUID.randomUUID().toString(), "sch_sen_02", "2410034", "Dimas Anggara", "XI IPA 2", now - 3000000, AttendanceStatus.PRESENT, true, true, 15, "3-Lapis", "Hadir Tepat Waktu"))
-            attendanceList.add(AttendanceRecord(UUID.randomUUID().toString(), "sch_sen_02", "2410035", "Eka Fitriani", "XI IPA 2", now - 2800000, AttendanceStatus.PRESENT, true, true, 9, "3-Lapis", "Hadir Tepat Waktu"))
-            attendanceList.add(AttendanceRecord(UUID.randomUUID().toString(), "sch_sel_03", "2410041", "Gilang Ramadhan", "XI TKJ 1", now - 86400000, AttendanceStatus.PRESENT, true, true, 11, "3-Lapis", "Hadir Tepat Waktu"))
-            attendanceList.add(AttendanceRecord(UUID.randomUUID().toString(), "sch_rab_03", "2410051", "Hana Lestari", "XII RPL 1", now - 172800000, AttendanceStatus.PRESENT, true, true, 10, "3-Lapis", "Hadir Tepat Waktu"))
+        studentCardsMap["0095687758"] = officialStudentCard
+
+        if (!usersMap.containsKey("0095687758")) {
+            val studentAcc = UserAccount(
+                id = "0095687758",
+                username = "0095687758",
+                nisn = "0095687758",
+                name = "DERRICK VITO RENGGADITA",
+                role = UserRole.STUDENT,
+                passwordHash = "Rengga123",
+                cardData = officialStudentCard,
+                enrolledDeviceId = "a978f676f77c44a2"
+            )
+            usersMap["0095687758"] = studentAcc
         }
 
-        prefs.edit().putBoolean("has_seeded_initial_data_v5", true).apply()
         saveAll()
     }
 
@@ -282,15 +217,38 @@ class AppRepository private constructor(context: Context) {
 
     fun getStudentsByClass(className: String): List<UserAccount> {
         val clean = className.trim()
+        if (clean.equals("Semua", ignoreCase = true)) {
+            return getAllStudents()
+        }
         return getAllStudents().filter {
-            it.cardData?.className.equals(clean, ignoreCase = true)
+            it.cardData?.className?.trim().equals(clean, ignoreCase = true)
         }
     }
 
     fun getAllAttendanceRecords(): List<AttendanceRecord> = attendanceList.toList()
 
     // --- Classes Management with Coordinates ---
-    fun getAllClasses(): List<SchoolClass> = classesList.toList()
+    fun getAllClasses(): List<SchoolClass> {
+        val result = mutableListOf<SchoolClass>()
+        result.addAll(classesList)
+        val existingNames = result.map { it.name.trim().lowercase() }.toSet()
+        for (st in studentCardsMap.values) {
+            val cName = st.className.trim()
+            if (cName.isNotEmpty() && !existingNames.contains(cName.lowercase())) {
+                result.add(
+                    SchoolClass(
+                        id = "cls_${cName.lowercase().replace(" ", "_")}",
+                        name = cName,
+                        room = "R. Kelas",
+                        latitude = -6.89972,
+                        longitude = 112.04944,
+                        radiusMeters = 50f
+                    )
+                )
+            }
+        }
+        return result
+    }
 
     fun getClassByName(className: String): SchoolClass? {
         val trimmed = className.trim()
@@ -336,11 +294,16 @@ class AppRepository private constructor(context: Context) {
         // If student, attach student card details
         var resolvedUser = user
         if (user.role == UserRole.STUDENT) {
-            val card = SupabaseClient.getStudentProfile(user.id) ?: studentCardsMap[user.id]
+            val nisnToLookup = user.nisn ?: user.id
+            val card = SupabaseClient.getStudentProfile(nisnToLookup)
+                ?: studentCardsMap[nisnToLookup]
+                ?: studentCardsMap[user.id]
             resolvedUser = user.copy(cardData = card)
         }
 
         usersMap[trimmedId] = resolvedUser
+        user.username?.let { usersMap[it] = resolvedUser }
+        user.nisn?.let { usersMap[it] = resolvedUser }
         saveAll()
         saveCurrentSession(resolvedUser)
         return Result.success(resolvedUser)
@@ -496,17 +459,95 @@ class AppRepository private constructor(context: Context) {
 
     fun getStudentAttendanceRecords(studentNisn: String): List<AttendanceRecord> {
         val clean = studentNisn.trim()
-        return attendanceList.filter { it.studentNisn == clean }
+        val user = usersMap[clean] ?: usersMap.values.firstOrNull {
+            it.nisn?.equals(clean, ignoreCase = true) == true ||
+            it.username?.equals(clean, ignoreCase = true) == true
+        }
+        val targetNis = user?.nisn ?: user?.id ?: clean
+        return attendanceList.filter {
+            it.studentNisn.trim().equals(clean, ignoreCase = true) ||
+            it.studentNisn.trim().equals(targetNis, ignoreCase = true)
+        }.sortedByDescending { it.timestamp }
     }
 
     // --- Schedules & Attendance ---
-    fun getAllSchedules(): List<AttendanceSchedule> = schedulesList.toList()
+    fun getAllSchedules(): List<AttendanceSchedule> {
+        var modified = false
+        for (i in schedulesList.indices) {
+            val item = schedulesList[i]
+            if (item.isOpenForAttendance && item.isExpired()) {
+                val updated = item.copy(isOpenForAttendance = false)
+                schedulesList[i] = updated
+                modified = true
+                scope.launch { SupabaseClient.saveSchedule(updated) }
+            }
+        }
+        if (modified) {
+            saveAll()
+        }
+        return schedulesList.toList()
+    }
 
     fun addSchedule(schedule: AttendanceSchedule) {
-        schedulesList.add(schedule)
+        saveSchedule(schedule)
+    }
+
+    fun saveSchedule(schedule: AttendanceSchedule) {
+        val scheduleToSave = if (schedule.isExpired()) schedule.copy(isOpenForAttendance = false) else schedule
+        val existingIndex = schedulesList.indexOfFirst {
+            it.id == scheduleToSave.id || (
+                it.className.trim().equals(scheduleToSave.className.trim(), ignoreCase = true) &&
+                it.sessionDate == scheduleToSave.sessionDate &&
+                scheduleToSave.sessionDate.isNotBlank() &&
+                scheduleToSave.sessionDate != "DELETED"
+            )
+        }
+        val finalSchedule = if (existingIndex != -1) {
+            scheduleToSave.copy(id = schedulesList[existingIndex].id)
+        } else {
+            scheduleToSave
+        }
+
+        if (existingIndex != -1) {
+            schedulesList[existingIndex] = finalSchedule
+        } else {
+            schedulesList.add(finalSchedule)
+        }
+
+        // Clean up any remaining duplicate schedules for the exact same class and date
+        val duplicates = schedulesList.filter {
+            it.id != finalSchedule.id &&
+            it.className.trim().equals(finalSchedule.className.trim(), ignoreCase = true) &&
+            it.sessionDate == finalSchedule.sessionDate &&
+            finalSchedule.sessionDate.isNotBlank() &&
+            finalSchedule.sessionDate != "DELETED"
+        }
+        for (dup in duplicates) {
+            schedulesList.remove(dup)
+            scope.launch { SupabaseClient.deleteSchedule(dup.id) }
+        }
+
         saveAll()
         scope.launch {
-            SupabaseClient.saveSchedule(schedule)
+            SupabaseClient.saveSchedule(finalSchedule)
+        }
+    }
+
+    fun deleteSchedule(scheduleId: String) {
+        val target = schedulesList.firstOrNull { it.id == scheduleId }
+        schedulesList.removeAll { it.id == scheduleId }
+        attendanceList.removeAll { it.scheduleId == scheduleId }
+        saveAll()
+        scope.launch {
+            SupabaseClient.deleteSchedule(scheduleId)
+            if (target != null && target.sessionDate.isNotBlank()) {
+                val remotes = SupabaseClient.getSchedules()
+                for (r in remotes) {
+                    if (r.className.trim().equals(target.className.trim(), ignoreCase = true) && r.sessionDate == target.sessionDate) {
+                        SupabaseClient.deleteSchedule(r.id)
+                    }
+                }
+            }
         }
     }
 
@@ -537,8 +578,15 @@ class AppRepository private constructor(context: Context) {
         val index = schedulesList.indexOfFirst { it.id == scheduleId }
         if (index != -1) {
             val item = schedulesList[index]
-            schedulesList[index] = item.copy(isOpenForAttendance = isOpen)
+            if (isOpen && item.isExpired()) {
+                return
+            }
+            val updated = item.copy(isOpenForAttendance = isOpen)
+            schedulesList[index] = updated
             saveAll()
+            scope.launch {
+                SupabaseClient.saveSchedule(updated)
+            }
         }
     }
 
@@ -547,26 +595,47 @@ class AppRepository private constructor(context: Context) {
         sessionDate: String,
         isOpen: Boolean,
         teacherId: String,
-        teacherName: String
+        teacherName: String,
+        startTime: String = "07:10",
+        endTime: String = "08:00"
     ): AttendanceSchedule {
-        val existing = schedulesList.firstOrNull { it.className.equals(className, ignoreCase = true) }
+        val cleanClass = className.trim()
+        val timeSlot = "$startTime - $endTime WIB"
+        val existing = schedulesList.firstOrNull {
+            it.className.trim().equals(cleanClass, ignoreCase = true) &&
+            (it.sessionDate == sessionDate || it.sessionDate.isBlank())
+        }
+        val dayName = try {
+            val sdfDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(sessionDate)
+            SimpleDateFormat("EEEE", Locale.forLanguageTag("id-ID")).format(sdfDate ?: java.util.Date())
+        } catch (_: Exception) {
+            "Senin"
+        }
+
         val schedule = if (existing != null) {
-            val updated = existing.copy(sessionDate = sessionDate, isOpenForAttendance = isOpen)
+            val updated = existing.copy(
+                sessionDate = sessionDate,
+                timeSlot = timeSlot,
+                isOpenForAttendance = isOpen,
+                dayName = dayName,
+                teacherId = teacherId,
+                teacherName = teacherName
+            )
             val idx = schedulesList.indexOf(existing)
             schedulesList[idx] = updated
             updated
         } else {
             val newSched = AttendanceSchedule(
                 id = "sch_${System.currentTimeMillis()}",
-                className = className,
-                subject = "Presensi Harian",
+                className = cleanClass,
+                subject = "Presensi Kelas $cleanClass",
                 teacherId = teacherId,
                 teacherName = teacherName,
                 periodStart = 1,
                 periodEnd = 2,
-                timeSlot = "07:15 - 09:15 WIB",
-                dayName = "Senin",
-                room = "R. Kelas",
+                timeSlot = timeSlot,
+                dayName = dayName,
+                room = getClassByName(cleanClass)?.room ?: "R. Kelas",
                 isOpenForAttendance = isOpen,
                 sessionDate = sessionDate
             )
@@ -683,7 +752,16 @@ class AppRepository private constructor(context: Context) {
     fun getAllPermissions(): List<StudentPermission> = permissionsList.toList()
 
     fun getStudentPermissions(nisn: String): List<StudentPermission> {
-        return permissionsList.filter { it.studentNisn == nisn }
+        val clean = nisn.trim()
+        val user = usersMap[clean] ?: usersMap.values.firstOrNull {
+            it.nisn?.equals(clean, ignoreCase = true) == true ||
+            it.username?.equals(clean, ignoreCase = true) == true
+        }
+        val targetNis = user?.nisn ?: user?.id ?: clean
+        return permissionsList.filter {
+            it.studentNisn.trim().equals(clean, ignoreCase = true) ||
+            it.studentNisn.trim().equals(targetNis, ignoreCase = true)
+        }.sortedByDescending { it.timestamp }
     }
 
     fun submitPermission(permission: StudentPermission): Result<Boolean> {
@@ -740,6 +818,7 @@ class AppRepository private constructor(context: Context) {
             // 0. Fetch live users from Supabase database table `users`
             val remoteUsers = SupabaseClient.getAllUsersFromDb()
             if (remoteUsers.isNotEmpty()) {
+                usersMap.clear()
                 for (u in remoteUsers) {
                     val key = u.username ?: u.nisn ?: u.id
                     usersMap[key] = u
@@ -751,32 +830,34 @@ class AppRepository private constructor(context: Context) {
             // 1. Fetch live students directly from Supabase database table `students`
             val remoteStudents = SupabaseClient.getAllStudentsFromDb()
             if (remoteStudents.isNotEmpty()) {
+                studentCardsMap.clear()
                 for (st in remoteStudents) {
                     studentCardsMap[st.nisn] = st
-                    if (!usersMap.containsKey(st.nisn)) {
-                        usersMap[st.nisn] = UserAccount(
+                    val existing = usersMap[st.nisn] ?: usersMap.values.firstOrNull { it.nisn == st.nisn }
+                    if (existing != null) {
+                        val updated = existing.copy(name = st.name, cardData = st)
+                        usersMap[st.nisn] = updated
+                        updated.username?.let { usersMap[it] = updated }
+                        usersMap[updated.id] = updated
+                    } else {
+                        val studentAcc = UserAccount(
                             id = st.nisn,
                             nisn = st.nisn,
+                            username = st.nisn,
                             name = st.name,
                             role = UserRole.STUDENT,
                             passwordHash = "12345678",
                             cardData = st
                         )
-                    } else {
-                        val existing = usersMap[st.nisn]!!
-                        val updated = existing.copy(name = st.name, cardData = st)
-                        usersMap[st.nisn] = updated
-                        updated.username?.let { usersMap[it] = updated }
+                        usersMap[st.nisn] = studentAcc
                     }
                 }
             }
 
             // 2. Fetch live schedules directly from Supabase
             val remoteSchedules = SupabaseClient.getSchedules()
-            if (remoteSchedules.isNotEmpty()) {
-                schedulesList.clear()
-                schedulesList.addAll(remoteSchedules)
-            }
+            schedulesList.clear()
+            schedulesList.addAll(remoteSchedules)
 
             // 3. Fetch live classes directly from Supabase
             val remoteClasses = SupabaseClient.getClasses()
@@ -787,17 +868,13 @@ class AppRepository private constructor(context: Context) {
 
             // 4. Fetch live attendance directly from Supabase
             val remoteAttendance = SupabaseClient.getAllAttendanceRecords()
-            if (remoteAttendance.isNotEmpty()) {
-                attendanceList.clear()
-                attendanceList.addAll(remoteAttendance)
-            }
+            attendanceList.clear()
+            attendanceList.addAll(remoteAttendance)
 
             // 5. Fetch live permissions directly from Supabase
             val remotePermissions = SupabaseClient.getAllPermissions()
-            if (remotePermissions.isNotEmpty()) {
-                permissionsList.clear()
-                permissionsList.addAll(remotePermissions)
-            }
+            permissionsList.clear()
+            permissionsList.addAll(remotePermissions)
 
             saveAll()
             Result.success(schedulesList.size)
@@ -806,11 +883,100 @@ class AppRepository private constructor(context: Context) {
         }
     }
 
-    suspend fun deleteSchedule(scheduleId: String): Boolean {
-        schedulesList.removeAll { it.id == scheduleId }
-        attendanceList.removeAll { it.scheduleId == scheduleId }
-        saveAll()
-        return SupabaseClient.deleteSchedule(scheduleId)
+    suspend fun fetchPureStudentsFromDatabase(): List<UserAccount> {
+        if (!SupabaseConfig.isConfigured()) {
+            return getAllStudents()
+        }
+        return try {
+            val remoteUsers = SupabaseClient.getAllUsersFromDb()
+            val remoteStudents = SupabaseClient.getAllStudentsFromDb()
+            val remoteAttendance = SupabaseClient.getAllAttendanceRecords()
+            val remotePermissions = SupabaseClient.getAllPermissions()
+
+            if (remoteAttendance.isNotEmpty()) {
+                attendanceList.clear()
+                attendanceList.addAll(remoteAttendance)
+            }
+            if (remotePermissions.isNotEmpty()) {
+                permissionsList.clear()
+                permissionsList.addAll(remotePermissions)
+            }
+
+            studentCardsMap.clear()
+            for (st in remoteStudents) {
+                studentCardsMap[st.nisn] = st
+            }
+
+            val studentAccounts = mutableMapOf<String, UserAccount>()
+
+            // 1. From remote students table
+            for (st in remoteStudents) {
+                val matchingUser = remoteUsers.firstOrNull {
+                    it.nisn == st.nisn || it.username == st.nisn || it.id == st.nisn
+                }
+                val acc = UserAccount(
+                    id = matchingUser?.id ?: st.nisn,
+                    dbId = matchingUser?.dbId,
+                    nisn = st.nisn,
+                    username = matchingUser?.username ?: st.nisn,
+                    name = st.name,
+                    role = UserRole.STUDENT,
+                    passwordHash = matchingUser?.passwordHash ?: "12345678",
+                    cardData = st,
+                    isBiometricEnrolled = matchingUser?.isBiometricEnrolled ?: false,
+                    isFaceEnrolled = matchingUser?.isFaceEnrolled ?: false,
+                    faceSignature = matchingUser?.faceSignature,
+                    biometricEnrolledAt = matchingUser?.biometricEnrolledAt ?: 0L,
+                    enrolledDeviceId = matchingUser?.enrolledDeviceId
+                )
+                studentAccounts[st.nisn] = acc
+                usersMap[st.nisn] = acc
+            }
+
+            // 2. From remote users table with role == STUDENT
+            for (u in remoteUsers.filter { it.role == UserRole.STUDENT }) {
+                val nisn = u.nisn ?: u.username ?: u.id
+                if (!studentAccounts.containsKey(nisn)) {
+                    val card = studentCardsMap[nisn] ?: StudentCardData(
+                        nisn = nisn,
+                        name = u.name,
+                        birthPlaceDate = "-",
+                        address = "-",
+                        religion = "-",
+                        bloodType = "-",
+                        schoolName = "SMKS TARUNA JAYA PRAWIRA TUBAN",
+                        className = "XI RPL 1",
+                        headmasterName = "Bambang Kusdiyanto, ST.M.Pd"
+                    )
+                    studentCardsMap[nisn] = card
+                    val acc = u.copy(cardData = card)
+                    studentAccounts[nisn] = acc
+                    usersMap[nisn] = acc
+                }
+            }
+
+            saveAll()
+            studentAccounts.values.sortedBy { it.name }
+        } catch (_: Exception) {
+            getAllStudents()
+        }
+    }
+
+    suspend fun syncStudentAttendanceAndPermits(studentNisn: String) {
+        if (!SupabaseConfig.isConfigured()) return
+        try {
+            val remoteRecords = SupabaseClient.getAttendanceForStudent(studentNisn)
+            if (remoteRecords.isNotEmpty()) {
+                attendanceList.removeAll { it.studentNisn == studentNisn }
+                attendanceList.addAll(remoteRecords)
+            }
+            val remotePermits = SupabaseClient.getPermissionsForStudent(studentNisn)
+            if (remotePermits.isNotEmpty()) {
+                permissionsList.removeAll { it.studentNisn == studentNisn }
+                permissionsList.addAll(remotePermits)
+            }
+            saveAll()
+        } catch (_: Exception) {}
     }
 
     companion object {

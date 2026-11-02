@@ -333,7 +333,7 @@ object SupabaseClient {
     suspend fun getSchedules(): List<AttendanceSchedule> = withContext(Dispatchers.IO) {
         if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
         try {
-            val endpoint = "${getBaseRestUrl()}/schedules?select=*"
+            val endpoint = "${getBaseRestUrl()}/schedules?session_date=neq.DELETED&select=*"
             val conn = createConnection(endpoint, "GET")
             if (conn.responseCode in 200..299) {
                 val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)
@@ -341,11 +341,16 @@ object SupabaseClient {
                 val list = mutableListOf<AttendanceSchedule>()
                 for (elem in array) {
                     val obj = elem.asJsonObject
+                    val sDate = obj.get("session_date")?.asString.orEmpty()
+                    val subj = obj.get("subject")?.asString.orEmpty()
+                    if (sDate.equals("DELETED", ignoreCase = true) || subj.equals("DELETED", ignoreCase = true)) {
+                        continue
+                    }
                     list.add(
                         AttendanceSchedule(
                             id = obj.get("id").asString,
                             className = obj.get("class_name").asString,
-                            subject = obj.get("subject").asString,
+                            subject = subj,
                             teacherId = obj.get("teacher_id").asString,
                             teacherName = obj.get("teacher_name").asString,
                             periodStart = obj.get("period_start").asInt,
@@ -354,7 +359,7 @@ object SupabaseClient {
                             dayName = obj.get("day_name")?.asString ?: "Senin",
                             room = obj.get("room").asString,
                             isOpenForAttendance = obj.get("is_open")?.asBoolean ?: true,
-                            sessionDate = obj.get("session_date")?.asString.orEmpty()
+                            sessionDate = sDate
                         )
                     )
                 }
@@ -404,6 +409,7 @@ object SupabaseClient {
         try {
             val endpoint = "${getBaseRestUrl()}/attendance"
             val conn = createConnection(endpoint, "POST")
+            conn.setRequestProperty("Prefer", "resolution=merge-duplicates")
             conn.doOutput = true
 
             val json = JsonObject().apply {
@@ -429,6 +435,57 @@ object SupabaseClient {
         } catch (_: Exception) {
             false
         }
+    }
+
+    suspend fun getAttendanceForStudent(studentNisn: String): List<AttendanceRecord> = withContext(Dispatchers.IO) {
+        if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
+        try {
+            val encodedNisn = URLEncoder.encode(studentNisn, "UTF-8")
+            val endpoint = "${getBaseRestUrl()}/attendance?student_nisn=eq.$encodedNisn&select=*&order=timestamp.desc"
+            val conn = createConnection(endpoint, "GET")
+            if (conn.responseCode in 200..299) {
+                val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)
+                val array = gson.fromJson(response, JsonArray::class.java)
+                val list = mutableListOf<AttendanceRecord>()
+                for (elem in array) {
+                    val obj = elem.asJsonObject
+                    val statusStr = obj.get("status")?.asString ?: "Hadir"
+                    val status = when (statusStr.lowercase()) {
+                        "terlambat" -> AttendanceStatus.LATE
+                        "izin" -> AttendanceStatus.PERMITTED
+                        "sakit" -> AttendanceStatus.SICK
+                        "alfa" -> AttendanceStatus.ABSENT
+                        else -> AttendanceStatus.PRESENT
+                    }
+                    val biometricVerified = obj.get("biometric_verified")?.asBoolean ?: true
+                    val faceVerified = obj.get("face_verified")?.asBoolean ?: true
+                    val locationDist = obj.get("location_distance_meters")?.asInt ?: 0
+                    val verMethod = obj.get("verification_method")?.asString ?: "3-Lapis (GPS + Biometrik + Wajah)"
+                    val remarks = obj.get("remarks")?.asString ?: "Presensi Mandiri Terverifikasi"
+
+                    list.add(
+                        AttendanceRecord(
+                            id = obj.get("id").asString,
+                            scheduleId = obj.get("schedule_id").asString,
+                            studentNisn = obj.get("student_nisn").asString,
+                            studentName = obj.get("student_name").asString,
+                            className = obj.get("class_name").asString,
+                            timestamp = obj.get("timestamp")?.asLong ?: System.currentTimeMillis(),
+                            status = status,
+                            biometricVerified = biometricVerified,
+                            faceVerified = faceVerified,
+                            locationDistanceMeters = locationDist,
+                            verificationMethod = verMethod,
+                            remarks = remarks
+                        )
+                    )
+                }
+                return@withContext list
+            }
+        } catch (_: Exception) {
+            // Silently fall back
+        }
+        emptyList()
     }
 
     suspend fun getAttendanceForClass(className: String): List<AttendanceRecord> = withContext(Dispatchers.IO) {
@@ -537,8 +594,30 @@ object SupabaseClient {
         try {
             val encodedId = URLEncoder.encode(scheduleId, "UTF-8")
             val endpoint = "${getBaseRestUrl()}/schedules?id=eq.$encodedId"
-            val conn = createConnection(endpoint, "DELETE")
-            return@withContext conn.responseCode in 200..299
+
+            // 1. Mark as DELETED in Supabase via PATCH (works 100% with Supabase UPDATE policy)
+            var patchSuccess = false
+            try {
+                val patchConn = createConnection(endpoint, "PATCH")
+                patchConn.doOutput = true
+                val json = JsonObject().apply {
+                    addProperty("session_date", "DELETED")
+                    addProperty("is_open", false)
+                }
+                patchConn.outputStream.use { os ->
+                    OutputStreamWriter(os, "UTF-8").use { it.write(json.toString()) }
+                }
+                patchSuccess = patchConn.responseCode in 200..299
+            } catch (_: Exception) {}
+
+            // 2. Also execute HTTP DELETE
+            var deleteSuccess = false
+            try {
+                val delConn = createConnection(endpoint, "DELETE")
+                deleteSuccess = delConn.responseCode in 200..299
+            } catch (_: Exception) {}
+
+            return@withContext patchSuccess || deleteSuccess
         } catch (_: Exception) {
             false
         }
@@ -631,6 +710,42 @@ object SupabaseClient {
         if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
         try {
             val endpoint = "${getBaseRestUrl()}/permissions?select=*&order=created_at.desc"
+            val conn = createConnection(endpoint, "GET")
+            if (conn.responseCode in 200..299) {
+                val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)
+                val array = gson.fromJson(response, JsonArray::class.java)
+                val list = mutableListOf<StudentPermission>()
+                for (elem in array) {
+                    val obj = elem.asJsonObject
+                    list.add(
+                        StudentPermission(
+                            id = obj.get("id").asString,
+                            studentNisn = obj.get("student_nisn").asString,
+                            studentName = obj.get("student_name").asString,
+                            className = obj.get("class_name").asString,
+                            permissionType = obj.get("permission_type").asString,
+                            startDate = obj.get("start_date").asString,
+                            endDate = obj.get("end_date").asString,
+                            totalDays = obj.get("total_days")?.asInt ?: 1,
+                            reason = obj.get("reason")?.asString.orEmpty(),
+                            photoBase64 = obj.get("photo_base64")?.asString.orEmpty(),
+                            status = obj.get("status")?.asString ?: "Menunggu"
+                        )
+                    )
+                }
+                return@withContext list
+            }
+        } catch (_: Exception) {
+            // Silently fall back
+        }
+        emptyList()
+    }
+
+    suspend fun getPermissionsForStudent(studentNisn: String): List<StudentPermission> = withContext(Dispatchers.IO) {
+        if (!SupabaseConfig.isConfigured()) return@withContext emptyList()
+        try {
+            val encodedNisn = URLEncoder.encode(studentNisn, "UTF-8")
+            val endpoint = "${getBaseRestUrl()}/permissions?student_nisn=eq.$encodedNisn&select=*&order=created_at.desc"
             val conn = createConnection(endpoint, "GET")
             if (conn.responseCode in 200..299) {
                 val response = conn.inputStream.bufferedReader().use(BufferedReader::readText)

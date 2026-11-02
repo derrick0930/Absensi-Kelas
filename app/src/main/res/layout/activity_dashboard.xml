@@ -1490,7 +1490,7 @@
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
-                        <!-- Card: Buka Sesi Absensi -->
+                        <!-- Header Bar: Pilih Kelas & Tombol Input Jadwal Absensi -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1510,15 +1510,6 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Buat sesi absensi"
-                                    android:textColor="@color/hadirku_text_dark"
-                                    android:textSize="13.5sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
                                     android:text="Pilih Kelas Target"
                                     android:textColor="@color/hadirku_text_muted"
                                     android:textSize="11.5sp" />
@@ -1547,190 +1538,17 @@
                                         android:paddingHorizontal="12dp"
                                         android:text="XI IPA 2"
                                         android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp" />
+                                        android:textSize="13.5sp" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
-                                <!-- Date Picker (Lengkap Hari, Tanggal, Bulan & Tahun seperti DatePicker HTML) -->
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
-                                    android:text="Pilih Tanggal Sesi Presensi (Lengkap Hari, Bulan &amp; Tahun)"
-                                    android:textColor="@color/hadirku_text_muted"
-                                    android:textSize="11.5sp" />
-
-                                <LinearLayout
-                                    android:id="@+id/btnTeacherPickSessionDate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="46dp"
-                                    android:layout_marginTop="4dp"
-                                    android:background="@drawable/bg_hadirku_input_field"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal"
-                                    android:paddingHorizontal="12dp">
-
-                                    <ImageView
-                                        android:layout_width="20dp"
-                                        android:layout_height="20dp"
-                                        android:src="@drawable/ic_nav_calendar"
-                                        app:tint="@color/hadirku_primary" />
-
-                                    <TextView
-                                        android:id="@+id/tvTeacherSessionDateDisplay"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="10dp"
-                                        android:layout_weight="1"
-                                        android:text="25/10/2026 - Minggu"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="@drawable/bg_button_navy"
-                                        android:backgroundTint="@color/hadirku_soft_mint"
-                                        android:paddingHorizontal="8dp"
-                                        android:paddingVertical="3dp"
-                                        android:text="Ganti Tanggal"
-                                        android:textColor="@color/hadirku_primary"
-                                        android:textSize="11sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <!-- Row: Jam Mulai & Sampai Jam -->
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
-                                    android:orientation="horizontal">
-
-                                    <LinearLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginEnd="6dp"
-                                        android:layout_weight="1"
-                                        android:orientation="vertical">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Jam mulai"
-                                            android:textColor="@color/hadirku_text_muted"
-                                            android:textSize="11.5sp" />
-
-                                        <EditText
-                                            android:id="@+id/etTeacherStartHour"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="40dp"
-                                            android:layout_marginTop="4dp"
-                                            android:background="@drawable/bg_hadirku_input_field"
-                                            android:gravity="center_vertical"
-                                            android:paddingHorizontal="12dp"
-                                            android:text="07:15"
-                                            android:textColor="@color/hadirku_text_dark"
-                                            android:textSize="13sp" />
-                                    </LinearLayout>
-
-                                    <LinearLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="6dp"
-                                        android:layout_weight="1"
-                                        android:orientation="vertical">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Sampai jam"
-                                            android:textColor="@color/hadirku_text_muted"
-                                            android:textSize="11.5sp" />
-
-                                        <EditText
-                                            android:id="@+id/etTeacherEndHour"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="40dp"
-                                            android:layout_marginTop="4dp"
-                                            android:background="@drawable/bg_hadirku_input_field"
-                                            android:gravity="center_vertical"
-                                            android:paddingHorizontal="12dp"
-                                            android:text="09:15"
-                                            android:textColor="@color/hadirku_text_dark"
-                                            android:textSize="13sp" />
-                                    </LinearLayout>
-                                </LinearLayout>
-
-                                <!-- Row: Absen Mulai & Absen Hingga -->
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
-                                    android:orientation="horizontal">
-
-                                    <LinearLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginEnd="6dp"
-                                        android:layout_weight="1"
-                                        android:orientation="vertical">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Absen mulai"
-                                            android:textColor="@color/hadirku_text_muted"
-                                            android:textSize="11.5sp" />
-
-                                        <EditText
-                                            android:id="@+id/etTeacherAttendanceStart"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="40dp"
-                                            android:layout_marginTop="4dp"
-                                            android:background="@drawable/bg_hadirku_input_field"
-                                            android:gravity="center_vertical"
-                                            android:paddingHorizontal="12dp"
-                                            android:text="07:10"
-                                            android:textColor="@color/hadirku_text_dark"
-                                            android:textSize="13sp" />
-                                    </LinearLayout>
-
-                                    <LinearLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="6dp"
-                                        android:layout_weight="1"
-                                        android:orientation="vertical">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Absen hingga"
-                                            android:textColor="@color/hadirku_text_muted"
-                                            android:textSize="11.5sp" />
-
-                                        <EditText
-                                            android:id="@+id/etTeacherAttendanceEnd"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="40dp"
-                                            android:layout_marginTop="4dp"
-                                            android:background="@drawable/bg_hadirku_input_field"
-                                            android:gravity="center_vertical"
-                                            android:paddingHorizontal="12dp"
-                                            android:text="08:00"
-                                            android:textColor="@color/hadirku_text_dark"
-                                            android:textSize="13sp" />
-                                    </LinearLayout>
-                                </LinearLayout>
-
-                                <!-- Button Selesai / Buka sesi -->
+                                <!-- Tombol Input Jadwal (Menggantikan form input besar & tombol selesai/buka sesi) -->
                                 <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnTeacherToggleSessionFigma"
+                                    android:id="@+id/btnTeacherInputSchedule"
                                     android:layout_width="match_parent"
-                                    android:layout_height="46dp"
-                                    android:layout_marginTop="14dp"
+                                    android:layout_height="48dp"
+                                    android:layout_marginTop="12dp"
                                     android:background="@drawable/bg_hadirku_primary_btn"
-                                    android:text="Selesai"
+                                    android:text="+ Input Jadwal Absensi"
                                     android:textAllCaps="false"
                                     android:textColor="@color/white"
                                     android:textSize="14sp"
@@ -1740,6 +1558,46 @@
 
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Section: Daftar Jadwal Sesi Absensi Kelas Ini -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvTeacherScheduleSectionHeader"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Jadwal Sesi Absensi"
+                                android:textColor="@color/hadirku_text_dark"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvTeacherScheduleCountBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_button_navy"
+                                android:backgroundTint="@color/hadirku_soft_mint"
+                                android:paddingHorizontal="9dp"
+                                android:paddingVertical="3dp"
+                                android:text="0 Jadwal"
+                                android:textColor="@color/hadirku_primary"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Container List Jadwal Kelas Ini -->
+                        <LinearLayout
+                            android:id="@+id/layoutTeacherSchedulesList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical" />
 
                         <!-- Header List: Siswa XI IPA 2 · 32 & Ekspor -->
                         <LinearLayout
@@ -1943,6 +1801,18 @@
                                     android:textSize="12sp" />
 
                                 <TextView
+                                    android:id="@+id/chipTeacherClassXirpl1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_chip_day_unselected"
+                                    android:gravity="center"
+                                    android:paddingHorizontal="14dp"
+                                    android:text="XI RPL 1"
+                                    android:textColor="@color/hadirku_text_dark"
+                                    android:textSize="12sp" />
+
+                                <TextView
                                     android:id="@+id/chipTeacherClassXiirpl1"
                                     android:layout_width="wrap_content"
                                     android:layout_height="32dp"
@@ -2063,14 +1933,16 @@
                                 android:padding="16dp">
 
                                 <TextView
+                                    android:id="@+id/tvTeacherLaporanChartTitle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Kehadiran XI IPA 2"
+                                    android:text="Kehadiran Siswa"
                                     android:textColor="@color/hadirku_text_dark"
                                     android:textSize="13.5sp"
                                     android:textStyle="bold" />
 
                                 <TextView
+                                    android:id="@+id/tvTeacherLaporanChartSubtitle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
@@ -2080,8 +1952,9 @@
 
                                 <!-- Vertical Bars Simulation -->
                                 <LinearLayout
+                                    android:id="@+id/layoutLaporanBarsContainer"
                                     android:layout_width="match_parent"
-                                    android:layout_height="120dp"
+                                    android:layout_height="135dp"
                                     android:layout_marginTop="16dp"
                                     android:gravity="bottom"
                                     android:orientation="horizontal"
@@ -2094,12 +1967,24 @@
                                         android:gravity="bottom|center_horizontal"
                                         android:orientation="vertical">
 
+                                        <TextView
+                                            android:id="@+id/tvBarLaporanPercent1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="4dp"
+                                            android:text="0%"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+
                                         <View
+                                            android:id="@+id/barLaporan1"
                                             android:layout_width="32dp"
-                                            android:layout_height="80dp"
+                                            android:layout_height="4dp"
                                             android:background="#A7F3D0" />
 
                                         <TextView
+                                            android:id="@+id/tvBarLaporanLabel1"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginTop="6dp"
@@ -2115,12 +2000,24 @@
                                         android:gravity="bottom|center_horizontal"
                                         android:orientation="vertical">
 
+                                        <TextView
+                                            android:id="@+id/tvBarLaporanPercent2"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="4dp"
+                                            android:text="0%"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+
                                         <View
+                                            android:id="@+id/barLaporan2"
                                             android:layout_width="32dp"
-                                            android:layout_height="95dp"
+                                            android:layout_height="4dp"
                                             android:background="#6EE7B7" />
 
                                         <TextView
+                                            android:id="@+id/tvBarLaporanLabel2"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginTop="6dp"
@@ -2136,12 +2033,24 @@
                                         android:gravity="bottom|center_horizontal"
                                         android:orientation="vertical">
 
+                                        <TextView
+                                            android:id="@+id/tvBarLaporanPercent3"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="4dp"
+                                            android:text="0%"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+
                                         <View
+                                            android:id="@+id/barLaporan3"
                                             android:layout_width="32dp"
-                                            android:layout_height="70dp"
+                                            android:layout_height="4dp"
                                             android:background="#34D399" />
 
                                         <TextView
+                                            android:id="@+id/tvBarLaporanLabel3"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginTop="6dp"
@@ -2157,12 +2066,24 @@
                                         android:gravity="bottom|center_horizontal"
                                         android:orientation="vertical">
 
+                                        <TextView
+                                            android:id="@+id/tvBarLaporanPercent4"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="4dp"
+                                            android:text="0%"
+                                            android:textColor="@color/hadirku_text_muted"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+
                                         <View
+                                            android:id="@+id/barLaporan4"
                                             android:layout_width="32dp"
-                                            android:layout_height="105dp"
+                                            android:layout_height="4dp"
                                             android:background="@color/hadirku_primary" />
 
                                         <TextView
+                                            android:id="@+id/tvBarLaporanLabel4"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginTop="6dp"
@@ -2293,138 +2214,6 @@
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
 
-                        <!-- Section: Per kelas -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="18dp"
-                            android:text="Per kelas"
-                            android:textColor="@color/hadirku_text_dark"
-                            android:textSize="13.5sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            app:cardBackgroundColor="@color/white"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="0.5dp"
-                            app:strokeColor="@color/hadirku_gray_border"
-                            app:strokeWidth="1dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:padding="16dp">
-
-                                <!-- Class 1: XI IPA 2 -->
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="XI IPA 2"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp" />
-
-                                    <TextView
-                                        android:id="@+id/tvLaporanClass1Percent"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="92%"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <ProgressBar
-                                    android:id="@+id/pbLaporanClass1"
-                                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="6dp"
-                                    android:layout_marginTop="6dp"
-                                    android:progress="92"
-                                    android:progressTint="@color/hadirku_primary" />
-
-                                <!-- Class 2: XI TKJ 1 -->
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="XI TKJ 1"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp" />
-
-                                    <TextView
-                                        android:id="@+id/tvLaporanClass2Percent"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="89%"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <ProgressBar
-                                    android:id="@+id/pbLaporanClass2"
-                                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="6dp"
-                                    android:layout_marginTop="6dp"
-                                    android:progress="89"
-                                    android:progressTint="#0D9488" />
-
-                                <!-- Class 3: XII RPL 1 -->
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="XII RPL 1"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp" />
-
-                                    <TextView
-                                        android:id="@+id/tvLaporanClass3Percent"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="94%"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <ProgressBar
-                                    android:id="@+id/pbLaporanClass3"
-                                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="6dp"
-                                    android:layout_marginTop="6dp"
-                                    android:progress="94"
-                                    android:progressTint="@color/hadirku_primary" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnTeacherExportLaporanFull"
                             android:layout_width="match_parent"
@@ -2517,7 +2306,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
-                                        android:text="NIP 198507122010011005 · Guru Matematika"
+                                        android:text="NIP 198507122010011005"
                                         android:textColor="@color/hadirku_text_muted"
                                         android:textSize="12sp" />
 
@@ -2561,35 +2350,6 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
                                 android:padding="16dp">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="Mata Pelajaran"
-                                        android:textColor="@color/hadirku_text_muted"
-                                        android:textSize="13sp" />
-
-                                    <TextView
-                                        android:id="@+id/tvTeacherProfilMapel"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Matematika Wajib"
-                                        android:textColor="@color/hadirku_text_dark"
-                                        android:textSize="13sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:layout_marginVertical="10dp"
-                                    android:background="#F3F4F6" />
 
                                 <LinearLayout
                                     android:layout_width="match_parent"

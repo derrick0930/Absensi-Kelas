@@ -2,6 +2,7 @@ package com.absensiapp.school.ui.dashboard
 
 import android.Manifest
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -33,6 +34,7 @@ import com.absensiapp.school.databinding.ItemScheduleCardBinding
 import com.absensiapp.school.databinding.ItemStudentAttendanceFigmaBinding
 import com.absensiapp.school.databinding.ItemStudentScheduleFigmaBinding
 import com.absensiapp.school.databinding.ItemTeacherStudentFigmaBinding
+import com.absensiapp.school.databinding.ItemTeacherScheduleCardBinding
 import com.absensiapp.school.databinding.ItemAdminActivityFigmaBinding
 import com.absensiapp.school.ui.login.LoginActivity
 import com.absensiapp.school.util.BiometricHelper
@@ -156,15 +158,18 @@ class DashboardActivity : AppCompatActivity() {
         currentUser = repository.getCurrentSession()
 
         if (currentUser == null) {
-            // Default demo student matching Figma design: Rina Aulia Putri (XI IPA 2)
-            currentUser = repository.getUserById("2410031") ?: repository.getUserById("rina.xipa2") ?: UserAccount(
-                id = "2410031",
-                nisn = "2410031",
-                name = "Rina Aulia Putri",
-                role = UserRole.STUDENT,
-                passwordHash = "12345678",
-                cardData = repository.lookupStudentCard("2410031")
-            )
+            val officialStudent = repository.getAllStudents().firstOrNull()
+            if (officialStudent != null) {
+                currentUser = officialStudent
+                repository.saveCurrentSession(officialStudent)
+            } else {
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+                finish()
+                return
+            }
         }
 
         activeRole = currentUser?.role ?: UserRole.STUDENT
@@ -463,9 +468,22 @@ class DashboardActivity : AppCompatActivity() {
         binding.layoutStudentProfil.visibility = if (index == 3) View.VISIBLE else View.GONE
 
         when (index) {
-            0 -> renderStudentBerandaTab()
+            0 -> {
+                renderStudentBerandaTab()
+                lifecycleScope.launch {
+                    repository.syncAllFromRemote()
+                    renderStudentBerandaTab()
+                }
+            }
             1 -> renderStudentIzinTab()
-            2 -> renderStudentRiwayatTab()
+            2 -> {
+                renderStudentRiwayatTab()
+                val studentNis = currentUser?.cardData?.nisn ?: currentUser?.nisn ?: currentUser?.id ?: ""
+                lifecycleScope.launch {
+                    repository.syncStudentAttendanceAndPermits(studentNis)
+                    renderStudentRiwayatTab()
+                }
+            }
             3 -> renderStudentProfilTab()
         }
     }
@@ -479,84 +497,126 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun renderStudentBerandaTab() {
-        val studentName = currentUser?.name ?: "Rina Aulia Putri"
-        val studentNis = currentUser?.cardData?.nisn ?: currentUser?.id ?: "2410031"
-        val studentClass = currentUser?.cardData?.className ?: "XI IPA 2"
+    private fun parseTimeToMinutes(timeStr: String): Int? {
+        val clean = timeStr.replace("WIB", "").replace("wib", "").trim()
+        val parts = clean.split(":")
+        if (parts.size >= 2) {
+            val h = parts[0].trim().toIntOrNull() ?: return null
+            val m = parts[1].trim().toIntOrNull() ?: return null
+            return h * 60 + m
+        }
+        return null
+    }
 
-        val selectedDateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedStudentCalendar.time)
-        val todayDateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val selectedDayIndo = SimpleDateFormat("EEEE", Locale.forLanguageTag("id-ID")).format(selectedStudentCalendar.time)
-        val formattedDisplayDate = SimpleDateFormat("d MMMM yyyy", Locale.forLanguageTag("id-ID")).format(selectedStudentCalendar.time)
+    private fun renderStudentBerandaTab() {
+        // Strictly lock Beranda to CURRENT REAL TIME / TODAY
+        selectedStudentCalendar = Calendar.getInstance()
+        val todayCal = Calendar.getInstance()
+        val todayDateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(todayCal.time)
+        val formattedDisplayDate = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.forLanguageTag("id-ID")).format(todayCal.time)
+
+        val studentName = currentUser?.name.orEmpty().ifEmpty { "Siswa" }
+        val studentNis = currentUser?.cardData?.nisn ?: currentUser?.nisn ?: currentUser?.id ?: ""
+        val studentClass = currentUser?.cardData?.className.orEmpty().ifEmpty { "XI RPL 1" }
 
         binding.tvBerandaStudentName.text = studentName
         binding.tvBerandaAvatarInitials.text = getInitials(studentName)
-        binding.tvBerandaDate.text = "$selectedDayIndo, $formattedDisplayDate (Ketuk untuk ganti tanggal)"
-        binding.tvBerandaClassNote.text = "Hanya kelas $studentClass"
+        binding.tvBerandaDate.text = formattedDisplayDate
+        binding.tvBerandaDate.setOnClickListener(null)
+        binding.tvBerandaClassNote.text = "Kelas $studentClass"
 
-        // Stats calculation
+        // Hide other day chips (Sen, Sel, Rab, Kam, Jum) - Only display TODAY
+        binding.chipGroupBerandaDays.visibility = View.GONE
+
+        // Real Stats calculation directly from student's database records
+        val studentRecords = repository.getStudentAttendanceRecords(studentNis)
+        val studentPermits = repository.getStudentPermissions(studentNis)
+        val presentCount = studentRecords.count { it.status == AttendanceStatus.PRESENT || it.status == AttendanceStatus.LATE }
+        val permitCount = studentRecords.count { it.status == AttendanceStatus.PERMITTED || it.status == AttendanceStatus.SICK } +
+                studentPermits.count { p -> p.status == "Disetujui" && studentRecords.none { it.scheduleId == "permission_${p.id}" } }
+        val absentCount = studentRecords.count { it.status == AttendanceStatus.ABSENT }
+        val totalRecorded = presentCount + permitCount + absentCount
+
+        val percentage = if (totalRecorded > 0) ((presentCount.toDouble() / totalRecorded.toDouble()) * 100).toInt() else 0
+        binding.tvStudentStatPercent.text = if (totalRecorded > 0) "$percentage%" else "-"
+        binding.tvStudentStatIzin.text = permitCount.toString()
+        binding.tvStudentStatAlpa.text = absentCount.toString()
+
+        // Pure Data: ONLY display schedule sent by teacher for TODAY and student's class
         val allSchedules = repository.getAllSchedules()
-        val classSchedules = allSchedules.filter { it.className.equals(studentClass, ignoreCase = true) }
-        val attendanceRecords = repository.getStudentAttendanceRecords(studentNis)
-        val presentCount = attendanceRecords.size
+        val schedulesToday = allSchedules.filter { schedule ->
+            val matchClass = schedule.className.trim().equals(studentClass.trim(), ignoreCase = true)
+            val matchDate = schedule.sessionDate == todayDateStr || schedule.sessionDate == "Hari ini" || schedule.sessionDate.isBlank()
+            val notDeleted = schedule.sessionDate != "DELETED" && schedule.subject != "DELETED"
+            matchClass && matchDate && notDeleted
+        }.sortedByDescending { it.id }
 
-        val totalExpected = if (classSchedules.isNotEmpty()) classSchedules.size * 5 else 20
-        val percentage = if (totalExpected > 0) {
-            val calc = (presentCount.toDouble() / totalExpected.toDouble() * 100).toInt()
-            if (calc > 0) calc.coerceIn(1, 100) else 92
-        } else {
-            92
-        }
-        binding.tvStudentStatPercent.text = "$percentage%"
-        binding.tvStudentStatIzin.text = "2"
-        binding.tvStudentStatAlpa.text = "0"
-
-        // Filter schedules matching this specific date (or matching day if sessionDate is empty/legacy)
-        val schedulesForDay = classSchedules.filter { schedule ->
-            if (schedule.sessionDate.isNotBlank() && schedule.sessionDate != "Hari ini") {
-                schedule.sessionDate == selectedDateStr
-            } else {
-                schedule.dayName.equals(selectedDayIndo, ignoreCase = true)
-            }
-        }
+        val nowCal = Calendar.getInstance()
+        val nowMinutes = nowCal.get(Calendar.HOUR_OF_DAY) * 60 + nowCal.get(Calendar.MINUTE)
 
         // Active Session Hero Card
-        val isToday = selectedDateStr == todayDateStr
-        val activeSchedule = schedulesForDay.firstOrNull { it.isOpenForAttendance }
-        if (isToday && activeSchedule != null) {
+        val activeSchedule = schedulesToday.firstOrNull { it.isOpenForAttendance } ?: schedulesToday.firstOrNull()
+        if (activeSchedule != null) {
             binding.cardHeroAttendance.visibility = View.VISIBLE
-            binding.tvHeroSubtext.text = "NIS $studentNis · $studentClass · $formattedDisplayDate"
-            binding.tvHeroAttendanceTitle.text = "Absensi ${activeSchedule.subject} sedang dibuka"
+            val timeInfo = activeSchedule.timeSlot.ifBlank { "07:10 - 08:00 WIB" }
+            binding.tvHeroSubtext.text = "NIS $studentNis · $studentClass · $timeInfo"
+
+            val timeParts = activeSchedule.timeSlot.split("-").map { it.trim() }
+            val startTimeStr = if (timeParts.isNotEmpty()) timeParts[0].replace("WIB", "").trim() else ""
+            val endTimeStr = if (timeParts.size > 1) timeParts[1].replace("WIB", "").trim() else ""
+
+            val startMinutes = parseTimeToMinutes(startTimeStr)
+            val endMinutes = parseTimeToMinutes(endTimeStr)
+
+            val isBeforeStart = startMinutes != null && nowMinutes < startMinutes
+            val isAfterEnd = endMinutes != null && nowMinutes > endMinutes
 
             val isAttended = repository.isStudentAttended(activeSchedule.id, studentNis)
-            if (isAttended) {
-                binding.btnHeroClockIn.isEnabled = false
-                binding.btnHeroClockIn.text = "Sudah Hadir"
-                binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.hadirku_soft_mint))
-                binding.btnHeroClockIn.setTextColor(ContextCompat.getColor(this, R.color.hadirku_primary))
-            } else {
-                binding.btnHeroClockIn.isEnabled = true
-                binding.btnHeroClockIn.text = "Absen sekarang"
-                binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.hadirku_yellow))
-                binding.btnHeroClockIn.setTextColor(ContextCompat.getColor(this, R.color.hadirku_primary))
-                binding.btnHeroClockIn.setOnClickListener {
-                    startAttendanceVerificationFlow(
-                        schedule = activeSchedule,
-                        studentNisn = studentNis,
-                        studentName = studentName,
-                        studentClass = studentClass
-                    )
+            when {
+                isAttended -> {
+                    binding.tvHeroAttendanceTitle.text = "Presensi Anda Berhasil Dicatat"
+                    binding.btnHeroClockIn.isEnabled = false
+                    binding.btnHeroClockIn.text = "Sudah Hadir"
+                    binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.hadirku_soft_mint))
+                    binding.btnHeroClockIn.setTextColor(ContextCompat.getColor(this, R.color.hadirku_primary))
+                }
+                !activeSchedule.isOpenForAttendance -> {
+                    binding.tvHeroAttendanceTitle.text = "Sesi Absensi ${activeSchedule.subject} Ditutup"
+                    binding.btnHeroClockIn.isEnabled = false
+                    binding.btnHeroClockIn.text = "Sesi Ditutup"
+                    binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F3F4F6"))
+                    binding.btnHeroClockIn.setTextColor(Color.parseColor("#9CA3AF"))
+                }
+                isBeforeStart -> {
+                    binding.tvHeroAttendanceTitle.text = "Absensi Dibuka Pukul $startTimeStr WIB"
+                    binding.btnHeroClockIn.isEnabled = false
+                    binding.btnHeroClockIn.text = "Belum Dimulai"
+                    binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F3F4F6"))
+                    binding.btnHeroClockIn.setTextColor(Color.parseColor("#9CA3AF"))
+                }
+                isAfterEnd -> {
+                    binding.tvHeroAttendanceTitle.text = "Batas Waktu Absensi Berakhir ($endTimeStr WIB)"
+                    binding.btnHeroClockIn.isEnabled = false
+                    binding.btnHeroClockIn.text = "Waktu Habis"
+                    binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FEF2F2"))
+                    binding.btnHeroClockIn.setTextColor(Color.parseColor("#DC2626"))
+                }
+                else -> {
+                    binding.tvHeroAttendanceTitle.text = "Absensi ${activeSchedule.subject} sedang dibuka"
+                    binding.btnHeroClockIn.isEnabled = true
+                    binding.btnHeroClockIn.text = "Absen sekarang"
+                    binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.hadirku_yellow))
+                    binding.btnHeroClockIn.setTextColor(ContextCompat.getColor(this, R.color.hadirku_primary))
+                    binding.btnHeroClockIn.setOnClickListener {
+                        startAttendanceVerificationFlow(
+                            schedule = activeSchedule,
+                            studentNisn = studentNis,
+                            studentName = studentName,
+                            studentClass = studentClass
+                        )
+                    }
                 }
             }
-        } else if (schedulesForDay.isNotEmpty()) {
-            val fallbackSchedule = schedulesForDay.first()
-            binding.cardHeroAttendance.visibility = View.VISIBLE
-            binding.tvHeroSubtext.text = "NIS $studentNis · $studentClass · $formattedDisplayDate"
-            binding.tvHeroAttendanceTitle.text = "Jadwal ${fallbackSchedule.subject}"
-            binding.btnHeroClockIn.isEnabled = false
-            binding.btnHeroClockIn.text = if (isToday) "Sesi Belum Dibuka" else "Jadwal $formattedDisplayDate"
-            binding.btnHeroClockIn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F3F4F6"))
-            binding.btnHeroClockIn.setTextColor(Color.parseColor("#9CA3AF"))
         } else {
             binding.cardHeroAttendance.visibility = View.GONE
         }
@@ -565,9 +625,9 @@ class DashboardActivity : AppCompatActivity() {
         val todayContainer = binding.layoutTodaySchedulesContainer
         todayContainer.removeAllViews()
 
-        if (schedulesForDay.isEmpty()) {
+        if (schedulesToday.isEmpty()) {
             val emptyCard = MaterialCardView(this).apply {
-                radius = 32f
+                radius = 24f
                 setCardBackgroundColor(Color.WHITE)
                 strokeColor = Color.parseColor("#E5E7EB")
                 strokeWidth = 2
@@ -586,14 +646,14 @@ class DashboardActivity : AppCompatActivity() {
                 setPadding(32, 40, 32, 40)
             }
             val emptyTitle = TextView(this).apply {
-                text = "Belum Ada Jadwal Pelajaran"
+                text = "Belum Ada Jadwal Absensi Hari Ini"
                 setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_dark))
-                textSize = 14f
+                textSize = 14.5f
                 typeface = Typeface.DEFAULT_BOLD
                 gravity = Gravity.CENTER
             }
             val emptySub = TextView(this).apply {
-                text = "Tidak ada jadwal kelas $studentClass pada tanggal $formattedDisplayDate ($selectedDayIndo). Guru pengajar dapat menambahkan jadwal pelajaran baru sesuai tanggal."
+                text = "Guru pengajar belum mengirimkan atau membuka sesi absensi untuk kelas $studentClass pada hari ini ($formattedDisplayDate). Jadwal absensi akan otomatis tampil saat guru membuka sesi absensi."
                 setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_muted))
                 textSize = 12f
                 gravity = Gravity.CENTER
@@ -604,35 +664,57 @@ class DashboardActivity : AppCompatActivity() {
             emptyCard.addView(emptyLayout)
             todayContainer.addView(emptyCard)
         } else {
-            for (schedule in schedulesForDay) {
+            for (schedule in schedulesToday) {
                 val itemBinding = ItemStudentScheduleFigmaBinding.inflate(layoutInflater, todayContainer, false)
-                val times = schedule.timeSlot.split("-").map { it.trim() }
-                itemBinding.tvScheduleStartTime.text = if (times.isNotEmpty()) times[0] else "07:00"
-                itemBinding.tvScheduleEndTime.text = if (times.size > 1) times[1] else "07:45"
+                val times = schedule.timeSlot.replace("WIB", "").trim().split("-").map { it.trim() }
+                itemBinding.tvScheduleStartTime.text = if (times.isNotEmpty() && times[0].isNotBlank()) times[0] else "07:00"
+                itemBinding.tvScheduleEndTime.text = if (times.size > 1 && times[1].isNotBlank()) times[1] else "08:30"
                 itemBinding.tvScheduleSubject.text = schedule.subject
                 itemBinding.tvScheduleTeacher.text = schedule.teacherName
 
                 val hasAttended = repository.isStudentAttended(schedule.id, studentNis)
-                if (hasAttended) {
-                    itemBinding.tvScheduleStatusPill.text = "Hadir"
-                    itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#ECFDF5"))
-                    itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#059669"))
-                } else if (schedule.isOpenForAttendance) {
-                    itemBinding.tvScheduleStatusPill.text = "Dibuka"
-                    itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#FEF3C7"))
-                    itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#D97706"))
-                    itemBinding.root.setOnClickListener {
-                        startAttendanceVerificationFlow(
-                            schedule = schedule,
-                            studentNisn = studentNis,
-                            studentName = studentName,
-                            studentClass = studentClass
-                        )
+                val timeParts = schedule.timeSlot.split("-").map { it.trim() }
+                val startStr = if (timeParts.isNotEmpty()) timeParts[0].replace("WIB", "").trim() else ""
+                val endStr = if (timeParts.size > 1) timeParts[1].replace("WIB", "").trim() else ""
+                val sMin = parseTimeToMinutes(startStr)
+                val eMin = parseTimeToMinutes(endStr)
+                val isBefore = sMin != null && nowMinutes < sMin
+                val isAfter = eMin != null && nowMinutes > eMin
+
+                when {
+                    hasAttended -> {
+                        itemBinding.tvScheduleStatusPill.text = "Hadir"
+                        itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#ECFDF5"))
+                        itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#059669"))
                     }
-                } else {
-                    itemBinding.tvScheduleStatusPill.text = "Belum"
-                    itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#F3F4F6"))
-                    itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#9CA3AF"))
+                    !schedule.isOpenForAttendance -> {
+                        itemBinding.tvScheduleStatusPill.text = "Ditutup"
+                        itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#F3F4F6"))
+                        itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#9CA3AF"))
+                    }
+                    isBefore -> {
+                        itemBinding.tvScheduleStatusPill.text = "Belum Mulai"
+                        itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#F3F4F6"))
+                        itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#9CA3AF"))
+                    }
+                    isAfter -> {
+                        itemBinding.tvScheduleStatusPill.text = "Waktu Habis"
+                        itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#FEF2F2"))
+                        itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#DC2626"))
+                    }
+                    else -> {
+                        itemBinding.tvScheduleStatusPill.text = "Dibuka"
+                        itemBinding.tvScheduleStatusPill.setBackgroundColor(Color.parseColor("#FEF3C7"))
+                        itemBinding.tvScheduleStatusPill.setTextColor(Color.parseColor("#D97706"))
+                        itemBinding.root.setOnClickListener {
+                            startAttendanceVerificationFlow(
+                                schedule = schedule,
+                                studentNisn = studentNis,
+                                studentName = studentName,
+                                studentClass = studentClass
+                            )
+                        }
+                    }
                 }
 
                 todayContainer.addView(itemBinding.root)
@@ -851,70 +933,167 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    private var isSyncingRiwayat = false
     private fun renderStudentRiwayatTab() {
-        val studentNis = currentUser?.cardData?.nisn ?: currentUser?.id ?: "2410031"
+        val studentNis = currentUser?.cardData?.nisn ?: currentUser?.nisn ?: currentUser?.id ?: ""
+        populateRiwayatUI(studentNis)
+
+        if (!isSyncingRiwayat && studentNis.isNotEmpty()) {
+            isSyncingRiwayat = true
+            lifecycleScope.launch {
+                try {
+                    repository.syncStudentAttendanceAndPermits(studentNis)
+                    populateRiwayatUI(studentNis)
+                } finally {
+                    isSyncingRiwayat = false
+                }
+            }
+        }
+    }
+
+    private fun populateRiwayatUI(studentNis: String) {
         val cal = Calendar.getInstance()
-        val monthFormat = SimpleDateFormat("MMMM yyyy", Locale("id", "ID"))
+        val monthFormat = SimpleDateFormat("MMMM yyyy", Locale.forLanguageTag("id-ID"))
         binding.tvRiwayatMonthHeader.text = monthFormat.format(cal.time)
 
         val records = repository.getStudentAttendanceRecords(studentNis)
-        val hadirCount = if (records.isNotEmpty()) records.size else 18
+        val permits = repository.getStudentPermissions(studentNis)
+
+        val hadirCount = records.count { it.status == AttendanceStatus.PRESENT || it.status == AttendanceStatus.LATE }
+        val izinCount = records.count { it.status == AttendanceStatus.PERMITTED || it.status == AttendanceStatus.SICK } +
+                permits.count { p -> (p.status == "Disetujui" || p.status == "Menunggu") && records.none { it.scheduleId == "permission_${p.id}" } }
+        val alpaCount = records.count { it.status == AttendanceStatus.ABSENT }
+
         binding.tvRiwayatHadirCount.text = hadirCount.toString()
-        binding.tvRiwayatIzinCount.text = "2"
-        binding.tvRiwayatAlpaCount.text = "0"
+        binding.tvRiwayatIzinCount.text = izinCount.toString()
+        binding.tvRiwayatAlpaCount.text = alpaCount.toString()
 
         val container = binding.layoutAttendanceHistoryContainer
         container.removeAllViews()
 
-        val filteredRecords: List<AttendanceRecord> = when (historyFilterStatus) {
-            "Hadir" -> records
-            "Izin" -> emptyList()
-            "Alpa" -> emptyList()
-            else -> records
+        val sdfDate = SimpleDateFormat("EEE, d MMM yyyy", Locale.forLanguageTag("id-ID"))
+        val sdfTime = SimpleDateFormat("HH:mm", Locale.forLanguageTag("id-ID"))
+        val allSchedules = repository.getAllSchedules()
+
+        // Pure Unified History Model
+        data class StudentHistoryItem(
+            val timestamp: Long,
+            val dateStr: String,
+            val subjectTime: String,
+            val statusText: String
+        )
+
+        val items = mutableListOf<StudentHistoryItem>()
+
+        for (rec in records) {
+            val sched = allSchedules.firstOrNull { it.id == rec.scheduleId }
+            val subject = sched?.subject ?: if (rec.remarks.isNotBlank()) rec.remarks else "Presensi Harian"
+            val time = sdfTime.format(Date(rec.timestamp))
+            val statusLabel = when (rec.status) {
+                AttendanceStatus.PRESENT -> "Hadir"
+                AttendanceStatus.LATE -> "Terlambat"
+                AttendanceStatus.PERMITTED -> "Izin"
+                AttendanceStatus.SICK -> "Sakit"
+                AttendanceStatus.ABSENT -> "Alpa"
+            }
+            items.add(
+                StudentHistoryItem(
+                    timestamp = rec.timestamp,
+                    dateStr = sdfDate.format(Date(rec.timestamp)),
+                    subjectTime = "$subject · $time WIB",
+                    statusText = statusLabel
+                )
+            )
         }
 
-        if (filteredRecords.isEmpty()) {
-            val sampleItems = listOf(
-                Triple("Sen, 12 Okt", "Matematika · 07:41", "Hadir"),
-                Triple("Sen, 12 Okt", "Bahasa Indonesia · 07:02", "Hadir"),
-                Triple("Jum, 9 Okt", "Fisika · 09:20", "Hadir"),
-                Triple("Kam, 8 Okt", "Bahasa Inggris", "Sakit"),
-                Triple("Rab, 7 Okt", "Kimia · 13:03", "Hadir"),
-                Triple("Sen, 5 Okt", "Matematika · 07:44", "Hadir")
-            )
-            val visibleSamples: List<Triple<String, String, String>> = when (historyFilterStatus) {
-                "Hadir" -> sampleItems.filter { it.third == "Hadir" }
-                "Izin" -> sampleItems.filter { it.third == "Sakit" || it.third == "Izin" }
-                "Alpa" -> emptyList()
-                else -> sampleItems
+        for (p in permits) {
+            val alreadyInRecords = records.any { it.scheduleId == "permission_${p.id}" }
+            if (!alreadyInRecords) {
+                val label = if (p.permissionType.contains("Sakit", ignoreCase = true)) "Sakit" else "Izin"
+                items.add(
+                    StudentHistoryItem(
+                        timestamp = p.timestamp,
+                        dateStr = "${p.startDate} s/d ${p.endDate}",
+                        subjectTime = "Surat Izin: ${p.permissionType} (${p.status})",
+                        statusText = label
+                    )
+                )
             }
+        }
 
-            for (sample in visibleSamples) {
-                val itemBinding = ItemStudentAttendanceFigmaBinding.inflate(layoutInflater, container, false)
-                itemBinding.tvHistoryDate.text = sample.first
-                itemBinding.tvHistorySubjectTime.text = sample.second
-                itemBinding.tvHistoryStatusPill.text = sample.third
+        val sortedItems = items.sortedByDescending { it.timestamp }
 
-                if (sample.third == "Hadir") {
-                    itemBinding.tvHistoryStatusPill.setBackgroundColor(Color.parseColor("#ECFDF5"))
-                    itemBinding.tvHistoryStatusPill.setTextColor(Color.parseColor("#059669"))
-                } else {
-                    itemBinding.tvHistoryStatusPill.setBackgroundColor(Color.parseColor("#EFF6FF"))
-                    itemBinding.tvHistoryStatusPill.setTextColor(Color.parseColor("#2563EB"))
+        val filteredItems = when (historyFilterStatus) {
+            "Hadir" -> sortedItems.filter { it.statusText == "Hadir" || it.statusText == "Terlambat" }
+            "Izin" -> sortedItems.filter { it.statusText == "Izin" || it.statusText == "Sakit" }
+            "Alpa" -> sortedItems.filter { it.statusText == "Alpa" }
+            else -> sortedItems
+        }
+
+        if (filteredItems.isEmpty()) {
+            val emptyCard = MaterialCardView(this).apply {
+                radius = 24f
+                setCardBackgroundColor(Color.WHITE)
+                strokeColor = Color.parseColor("#E5E7EB")
+                strokeWidth = 2
+                elevation = 0f
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = 16
+                    bottomMargin = 16
                 }
-                container.addView(itemBinding.root)
             }
+            val emptyLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                setPadding(32, 40, 32, 40)
+            }
+            val emptyTitle = TextView(this).apply {
+                text = "Belum Ada Catatan Riwayat"
+                setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_dark))
+                textSize = 14.5f
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+            }
+            val emptySub = TextView(this).apply {
+                val filterDesc = if (historyFilterStatus == "Semua") "presensi maupun surat izin" else "dengan status $historyFilterStatus"
+                text = "Belum ada riwayat $filterDesc yang tercatat pada akun ini ($studentNis). Semua riwayat presensi dan permohonan izin akan tersimpan akurat sesuai data resmi."
+                setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_muted))
+                textSize = 12f
+                gravity = Gravity.CENTER
+                setPadding(0, 6, 0, 0)
+            }
+            emptyLayout.addView(emptyTitle)
+            emptyLayout.addView(emptySub)
+            emptyCard.addView(emptyLayout)
+            container.addView(emptyCard)
         } else {
-            val sdfDate = SimpleDateFormat("EEE, d MMM", Locale("id", "ID"))
-            val sdfTime = SimpleDateFormat("HH:mm", Locale("id", "ID"))
-            for (rec in filteredRecords) {
+            for (item in filteredItems) {
                 val itemBinding = ItemStudentAttendanceFigmaBinding.inflate(layoutInflater, container, false)
-                val sched = repository.getAllSchedules().firstOrNull { it.id == rec.scheduleId }
-                itemBinding.tvHistoryDate.text = sdfDate.format(Date(rec.timestamp))
-                itemBinding.tvHistorySubjectTime.text = "${sched?.subject ?: "Mata Pelajaran"} · ${sdfTime.format(Date(rec.timestamp))}"
-                itemBinding.tvHistoryStatusPill.text = "Hadir"
-                itemBinding.tvHistoryStatusPill.setBackgroundColor(Color.parseColor("#ECFDF5"))
-                itemBinding.tvHistoryStatusPill.setTextColor(Color.parseColor("#059669"))
+                itemBinding.tvHistoryDate.text = item.dateStr
+                itemBinding.tvHistorySubjectTime.text = item.subjectTime
+                itemBinding.tvHistoryStatusPill.text = item.statusText
+
+                when (item.statusText) {
+                    "Hadir" -> {
+                        itemBinding.tvHistoryStatusPill.setBackgroundColor(Color.parseColor("#ECFDF5"))
+                        itemBinding.tvHistoryStatusPill.setTextColor(Color.parseColor("#059669"))
+                    }
+                    "Terlambat" -> {
+                        itemBinding.tvHistoryStatusPill.setBackgroundColor(Color.parseColor("#FFFBEB"))
+                        itemBinding.tvHistoryStatusPill.setTextColor(Color.parseColor("#D97706"))
+                    }
+                    "Izin", "Sakit" -> {
+                        itemBinding.tvHistoryStatusPill.setBackgroundColor(Color.parseColor("#EFF6FF"))
+                        itemBinding.tvHistoryStatusPill.setTextColor(Color.parseColor("#2563EB"))
+                    }
+                    else -> {
+                        itemBinding.tvHistoryStatusPill.setBackgroundColor(Color.parseColor("#FEF2F2"))
+                        itemBinding.tvHistoryStatusPill.setTextColor(Color.parseColor("#DC2626"))
+                    }
+                }
                 container.addView(itemBinding.root)
             }
         }
@@ -1022,7 +1201,7 @@ class DashboardActivity : AppCompatActivity() {
 
         // Tab 1 (Absensi) - Setup Class Dropdown Selection
         val allClasses = repository.getAllClasses()
-        val classNames = if (allClasses.isNotEmpty()) allClasses.map { it.name }.distinct() else listOf("XI IPA 2", "XI TKJ 1", "XII RPL 1")
+        val classNames = if (allClasses.isNotEmpty()) allClasses.map { it.name }.distinct() else listOf("XI RPL 1", "XI IPA 2", "XI TKJ 1", "XII RPL 1")
         val classAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, classNames)
         binding.actvTeacherClassTarget.setAdapter(classAdapter)
         binding.actvTeacherClassTarget.setText(selectedTeacherSessionClass, false)
@@ -1031,43 +1210,10 @@ class DashboardActivity : AppCompatActivity() {
             renderTeacherAbsensiTab()
         }
 
-        // Tab 1 (Absensi) - Date Picker HTML-like (Lengkap Hari, Tanggal, Bulan, Tahun)
-        val fullDateFormat = SimpleDateFormat("dd/MM/yyyy - EEEE", Locale.forLanguageTag("id-ID"))
-        binding.tvTeacherSessionDateDisplay.text = fullDateFormat.format(teacherSessionCal.time)
-        binding.btnTeacherPickSessionDate.setOnClickListener {
-            val y = teacherSessionCal.get(Calendar.YEAR)
-            val m = teacherSessionCal.get(Calendar.MONTH)
-            val d = teacherSessionCal.get(Calendar.DAY_OF_MONTH)
-            DatePickerDialog(this, { _, year, month, dayOfMonth ->
-                teacherSessionCal.set(year, month, dayOfMonth)
-                binding.tvTeacherSessionDateDisplay.text = fullDateFormat.format(teacherSessionCal.time)
-                renderTeacherAbsensiTab()
-            }, y, m, d).show()
-        }
-
-        // Tab 1 (Absensi) - Buka / Tutup Sesi Presensi
-        binding.btnTeacherToggleSessionFigma.setOnClickListener {
-            isTeacherSessionActive = !isTeacherSessionActive
-            binding.btnTeacherToggleSessionFigma.text = if (isTeacherSessionActive) "Selesai" else "Buka sesi"
-
+        // Tab 1 (Absensi) - Tombol Input Jadwal Absensi (Membuka popup input jadwal)
+        binding.btnTeacherInputSchedule.setOnClickListener {
             val targetClass = binding.actvTeacherClassTarget.text.toString().ifBlank { selectedTeacherSessionClass }
-            val sessionDateYmd = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(teacherSessionCal.time)
-
-            repository.addOrUpdateSession(
-                className = targetClass,
-                sessionDate = sessionDateYmd,
-                isOpen = isTeacherSessionActive,
-                teacherId = currentUser?.id ?: "1982051001",
-                teacherName = currentUser?.name ?: "Pak Dedi Kurniawan"
-            )
-
-            val statusMsg = if (isTeacherSessionActive) {
-                "Sesi absensi dibuka untuk kelas $targetClass tanggal $sessionDateYmd."
-            } else {
-                "Sesi absensi ditutup untuk kelas $targetClass."
-            }
-            Toast.makeText(this, statusMsg, Toast.LENGTH_SHORT).show()
-            renderTeacherAbsensiTab()
+            showTeacherScheduleDialog(null, targetClass)
         }
 
         binding.btnTeacherExportExcelHeader.setOnClickListener {
@@ -1088,6 +1234,11 @@ class DashboardActivity : AppCompatActivity() {
         }
         binding.chipTeacherClassXitkj1.setOnClickListener {
             selectedTeacherClassFilter = "XI TKJ 1"
+            updateTeacherClassChipSelection()
+            renderTeacherSiswaTab()
+        }
+        binding.chipTeacherClassXirpl1.setOnClickListener {
+            selectedTeacherClassFilter = "XI RPL 1"
             updateTeacherClassChipSelection()
             renderTeacherSiswaTab()
         }
@@ -1144,6 +1295,9 @@ class DashboardActivity : AppCompatActivity() {
         binding.chipTeacherClassXitkj1.background = if (selectedTeacherClassFilter == "XI TKJ 1") selectedBg else unselectedBg
         binding.chipTeacherClassXitkj1.setTextColor(if (selectedTeacherClassFilter == "XI TKJ 1") whiteColor else darkColor)
 
+        binding.chipTeacherClassXirpl1.background = if (selectedTeacherClassFilter == "XI RPL 1") selectedBg else unselectedBg
+        binding.chipTeacherClassXirpl1.setTextColor(if (selectedTeacherClassFilter == "XI RPL 1") whiteColor else darkColor)
+
         binding.chipTeacherClassXiirpl1.background = if (selectedTeacherClassFilter == "XII RPL 1") selectedBg else unselectedBg
         binding.chipTeacherClassXiirpl1.setTextColor(if (selectedTeacherClassFilter == "XII RPL 1") whiteColor else darkColor)
     }
@@ -1174,7 +1328,17 @@ class DashboardActivity : AppCompatActivity() {
         when (tabIndex) {
             0 -> renderTeacherAbsensiTab()
             1 -> renderTeacherSiswaTab()
-            2 -> renderTeacherLaporanTab()
+            2 -> {
+                renderTeacherLaporanTab()
+                lifecycleScope.launch {
+                    try {
+                        repository.fetchPureStudentsFromDatabase()
+                        if (selectedTeacherTab == 2) {
+                            renderTeacherLaporanTab()
+                        }
+                    } catch (_: Exception) {}
+                }
+            }
             3 -> renderTeacherProfilTab()
         }
     }
@@ -1183,17 +1347,140 @@ class DashboardActivity : AppCompatActivity() {
         val teacherName = currentUser?.name ?: "Pak Dedi Kurniawan"
         binding.tvTeacherHeaderName.text = teacherName
 
+        val targetClass = binding.actvTeacherClassTarget.text.toString().ifBlank { selectedTeacherSessionClass }
+
+        // --- Render Schedule List for targetClass ---
+        val scheduleContainer = binding.layoutTeacherSchedulesList
+        scheduleContainer.removeAllViews()
+
+        val allSchedules = repository.getAllSchedules()
+        val classSchedules = allSchedules.filter {
+            it.className.trim().equals(targetClass.trim(), ignoreCase = true) &&
+            it.sessionDate != "DELETED" &&
+            it.subject != "DELETED" &&
+            !it.isPastDay()
+        }.sortedByDescending { it.id }
+        binding.tvTeacherScheduleSectionHeader.text = "Jadwal Sesi Absensi $targetClass"
+        binding.tvTeacherScheduleCountBadge.text = "${classSchedules.size} Jadwal"
+
+        if (classSchedules.isEmpty()) {
+            val emptyCard = com.google.android.material.card.MaterialCardView(this).apply {
+                radius = 24f
+                setCardBackgroundColor(Color.WHITE)
+                strokeColor = Color.parseColor("#E5E7EB")
+                strokeWidth = 2
+                elevation = 0f
+            }
+            val emptyLayout = android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                gravity = android.view.Gravity.CENTER
+                setPadding(32, 32, 32, 32)
+            }
+            val emptyTitle = TextView(this).apply {
+                text = "Belum Ada Jadwal Sesi Absensi"
+                setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_dark))
+                textSize = 13.5f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                gravity = android.view.Gravity.CENTER
+            }
+            val emptySub = TextView(this).apply {
+                text = "Tekan tombol '+ Input Jadwal Absensi' di atas untuk membuat jadwal sesi presensi baru untuk kelas $targetClass."
+                setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_muted))
+                textSize = 12f
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, 8, 0, 0)
+            }
+            emptyLayout.addView(emptyTitle)
+            emptyLayout.addView(emptySub)
+            emptyCard.addView(emptyLayout)
+            scheduleContainer.addView(emptyCard)
+        } else {
+            for (schedule in classSchedules) {
+                val cardBinding = ItemTeacherScheduleCardBinding.inflate(layoutInflater, scheduleContainer, false)
+                cardBinding.tvCardClassName.text = schedule.className
+                cardBinding.tvCardRoom.text = schedule.room.ifBlank { "Ruang 10" }
+                cardBinding.tvCardSubject.text = schedule.subject
+                cardBinding.tvCardTimeSlot.text = schedule.timeSlot
+                cardBinding.tvCardDate.text = "${schedule.sessionDate} • ${schedule.dayName}"
+
+                val isExpired = schedule.isExpired()
+                if (isExpired && schedule.isOpenForAttendance) {
+                    schedule.isOpenForAttendance = false
+                    repository.toggleScheduleStatus(schedule.id, false)
+                }
+                val isOpen = schedule.isOpenForAttendance && !isExpired
+
+                cardBinding.tvCardStatusBadge.text = when {
+                    isExpired -> "Selesai"
+                    isOpen -> "Sesi Dibuka"
+                    else -> "Sesi Ditutup"
+                }
+                cardBinding.tvCardStatusBadge.backgroundTintList = ColorStateList.valueOf(
+                    when {
+                        isExpired -> Color.parseColor("#FEE2E2")
+                        isOpen -> Color.parseColor("#ECFDF5")
+                        else -> Color.parseColor("#F3F4F6")
+                    }
+                )
+                cardBinding.tvCardStatusBadge.setTextColor(
+                    when {
+                        isExpired -> Color.parseColor("#DC2626")
+                        isOpen -> Color.parseColor("#059669")
+                        else -> Color.parseColor("#6B7280")
+                    }
+                )
+
+                if (isExpired) {
+                    cardBinding.btnCardToggleStatus.isEnabled = false
+                    cardBinding.btnCardToggleStatus.alpha = 0.5f
+                    cardBinding.btnCardToggleStatus.text = "Waktu Habis"
+                } else {
+                    cardBinding.btnCardToggleStatus.isEnabled = true
+                    cardBinding.btnCardToggleStatus.alpha = 1.0f
+                    cardBinding.btnCardToggleStatus.text = if (isOpen) "Tutup Sesi" else "Buka Sesi"
+                    cardBinding.btnCardToggleStatus.setOnClickListener {
+                        repository.toggleScheduleStatus(schedule.id, !isOpen)
+                        Toast.makeText(
+                            this,
+                            if (!isOpen) "Sesi absensi dibuka untuk ${schedule.subject}" else "Sesi absensi ditutup untuk ${schedule.subject}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        renderTeacherAbsensiTab()
+                    }
+                }
+
+                // Edit schedule
+                cardBinding.btnCardEditSchedule.setOnClickListener {
+                    showTeacherScheduleDialog(schedule, targetClass)
+                }
+
+                // Delete schedule with confirmation dialog
+                cardBinding.btnCardDeleteSchedule.setOnClickListener {
+                    AlertDialog.Builder(this)
+                        .setTitle("Hapus Jadwal")
+                        .setMessage("Apakah Anda yakin ingin menghapus jadwal '${schedule.subject}' untuk kelas ${schedule.className}?")
+                        .setPositiveButton("Hapus") { _, _ ->
+                            repository.deleteSchedule(schedule.id)
+                            Toast.makeText(this, "Jadwal '${schedule.subject}' berhasil dihapus!", Toast.LENGTH_SHORT).show()
+                            renderTeacherAbsensiTab()
+                        }
+                        .setNegativeButton("Batal", null)
+                        .show()
+                }
+
+                scheduleContainer.addView(cardBinding.root)
+            }
+        }
+
+        // --- Render Student List for targetClass ---
         val container = binding.layoutTeacherAbsensiStudentList
         container.removeAllViews()
 
-        val targetClass = binding.actvTeacherClassTarget.text.toString().ifBlank { selectedTeacherSessionClass }
         val realStudents = repository.getStudentsByClass(targetClass)
         binding.tvTeacherClassCountHeader.text = "Siswa $targetClass · ${realStudents.size}"
 
         val allRecords = repository.getAllAttendanceRecords()
-        val allSchedules = repository.getAllSchedules()
-        val activeSchedule = allSchedules.firstOrNull { it.className.equals(targetClass, ignoreCase = true) && it.isOpenForAttendance }
-            ?: allSchedules.firstOrNull { it.className.equals(targetClass, ignoreCase = true) }
+        val activeSchedule = classSchedules.firstOrNull { it.isOpenForAttendance } ?: classSchedules.firstOrNull()
 
         for (student in realStudents) {
             val itemBinding = ItemTeacherStudentFigmaBinding.inflate(layoutInflater, container, false)
@@ -1221,7 +1508,8 @@ class DashboardActivity : AppCompatActivity() {
             }
 
             val studentTotalRecords = repository.getStudentAttendanceRecords(studentNisn)
-            val percentText = if (studentTotalRecords.isNotEmpty()) "96%" else "-"
+            val presentCount = studentTotalRecords.count { it.status == AttendanceStatus.PRESENT || it.status == AttendanceStatus.LATE }
+            val percentText = if (studentTotalRecords.isNotEmpty()) "${((presentCount.toDouble() / studentTotalRecords.size.toDouble()) * 100).toInt()}%" else "-"
             itemBinding.tvStudentAttendancePercent.text = percentText
 
             itemBinding.tvStudentStatusPill.text = statusText
@@ -1364,14 +1652,23 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun renderTeacherSiswaTab() {
+        populateTeacherSiswaList(repository.getAllStudents())
+        lifecycleScope.launch {
+            try {
+                val liveStudents = repository.fetchPureStudentsFromDatabase()
+                populateTeacherSiswaList(liveStudents)
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun populateTeacherSiswaList(students: List<UserAccount>) {
         val container = binding.layoutTeacherAllStudentsContainer
         container.removeAllViews()
 
-        val allStudents = repository.getAllStudents()
         val searchQuery = binding.etTeacherSearchStudent.text?.toString()?.trim() ?: ""
 
-        val filtered = allStudents.filter { st ->
-            val stClass = st.cardData?.className ?: "XI IPA 2"
+        val filtered = students.filter { st ->
+            val stClass = st.cardData?.className?.ifBlank { "XI RPL 1" } ?: "XI RPL 1"
             val stNisn = st.cardData?.nisn ?: st.nisn ?: st.id
             val matchClass = if (selectedTeacherClassFilter == "Semua") true else stClass.equals(selectedTeacherClassFilter, ignoreCase = true)
             val matchQuery = if (searchQuery.isEmpty()) true else (st.name.contains(searchQuery, ignoreCase = true) || stNisn.contains(searchQuery))
@@ -1380,33 +1677,77 @@ class DashboardActivity : AppCompatActivity() {
 
         binding.tvTeacherTotalStudentsCount.text = "${filtered.size} siswa terdaftar"
 
+        if (filtered.isEmpty()) {
+            val emptyCard = MaterialCardView(this).apply {
+                radius = 24f
+                setCardBackgroundColor(Color.WHITE)
+                strokeColor = Color.parseColor("#E5E7EB")
+                strokeWidth = 2
+                elevation = 0f
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = 12
+                    bottomMargin = 12
+                }
+            }
+            val emptyLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                setPadding(32, 40, 32, 40)
+            }
+            val emptyTitle = TextView(this).apply {
+                text = "Belum Ada Data Siswa"
+                setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_dark))
+                textSize = 14f
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+            }
+            val emptySub = TextView(this).apply {
+                text = "Tidak ditemukan data siswa untuk filter kelas '$selectedTeacherClassFilter' di database."
+                setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.hadirku_text_muted))
+                textSize = 12f
+                gravity = Gravity.CENTER
+                setPadding(0, 4, 0, 0)
+            }
+            emptyLayout.addView(emptyTitle)
+            emptyLayout.addView(emptySub)
+            emptyCard.addView(emptyLayout)
+            container.addView(emptyCard)
+            return
+        }
+
         val allAttendance = repository.getAllAttendanceRecords()
+        val todayKey = repository.getTodayDateKey()
 
         for (student in filtered) {
             val itemBinding = ItemTeacherStudentFigmaBinding.inflate(layoutInflater, container, false)
             val studentNisn = student.cardData?.nisn ?: student.nisn ?: student.id
-            val studentClass = student.cardData?.className ?: "XI IPA 2"
+            val studentClass = student.cardData?.className?.ifBlank { "XI RPL 1" } ?: "XI RPL 1"
 
             itemBinding.tvStudentItemName.text = student.name
             itemBinding.tvStudentAvatarInitials.text = getInitials(student.name)
             itemBinding.tvStudentItemDetails.text = "NIS $studentNisn · $studentClass"
 
             val studentRecords = repository.getStudentAttendanceRecords(studentNisn)
+            val presentCount = studentRecords.count { it.status == AttendanceStatus.PRESENT || it.status == AttendanceStatus.LATE }
             val attendancePercent = if (studentRecords.isNotEmpty()) {
-                val lastDigit = studentNisn.takeLast(1).toIntOrNull() ?: 1
-                val base = 90 + (lastDigit % 10)
-                "${base.coerceIn(85, 100)}%"
+                "${((presentCount.toDouble() / studentRecords.size.toDouble()) * 100).toInt()}%"
             } else {
-                "92%"
+                "-"
             }
             itemBinding.tvStudentAttendancePercent.text = attendancePercent
 
-            val isAttended = allAttendance.any { it.studentNisn == studentNisn && it.status == AttendanceStatus.PRESENT }
-            val isPermitted = allAttendance.any { it.studentNisn == studentNisn && it.status == AttendanceStatus.PERMITTED }
+            val isAttendedToday = allAttendance.any { it.studentNisn == studentNisn && it.status == AttendanceStatus.PRESENT && repository.formatDateKey(it.timestamp) == todayKey }
+            val isPermittedToday = allAttendance.any { it.studentNisn == studentNisn && it.status == AttendanceStatus.PERMITTED && repository.formatDateKey(it.timestamp) == todayKey }
+            val isAbsentToday = allAttendance.any { it.studentNisn == studentNisn && it.status == AttendanceStatus.ABSENT && repository.formatDateKey(it.timestamp) == todayKey }
+
             val statusText = when {
-                isAttended -> "Hadir"
-                isPermitted -> "Izin"
-                else -> "Aktif"
+                isAttendedToday -> "Hadir"
+                isPermittedToday -> "Izin"
+                isAbsentToday -> "Alpa"
+                else -> "Belum Absen"
             }
 
             itemBinding.tvStudentStatusPill.text = statusText
@@ -1414,6 +1755,7 @@ class DashboardActivity : AppCompatActivity() {
                 when (statusText) {
                     "Hadir" -> Color.parseColor("#ECFDF5")
                     "Izin" -> Color.parseColor("#FFFBEB")
+                    "Alpa" -> Color.parseColor("#FEF2F2")
                     else -> Color.parseColor("#F3F4F6")
                 }
             )
@@ -1421,7 +1763,8 @@ class DashboardActivity : AppCompatActivity() {
                 when (statusText) {
                     "Hadir" -> Color.parseColor("#059669")
                     "Izin" -> Color.parseColor("#D97706")
-                    else -> Color.parseColor("#4B5563")
+                    "Alpa" -> Color.parseColor("#DC2626")
+                    else -> Color.parseColor("#6B7280")
                 }
             )
             container.addView(itemBinding.root)
@@ -1430,40 +1773,68 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun renderTeacherLaporanTab() {
         val allRecords = repository.getAllAttendanceRecords()
-        val presentCount = allRecords.count { it.status == AttendanceStatus.PRESENT }
-        val permitCount = allRecords.count { it.status == AttendanceStatus.PERMITTED }
-        val absentCount = allRecords.count { it.status == AttendanceStatus.ABSENT }
+        binding.tvTeacherLaporanChartTitle.text = "Kehadiran Siswa"
 
-        val totalExpected = (presentCount + permitCount + absentCount).coerceAtLeast(1)
-        val presentRate = ((presentCount.toDouble() / totalExpected.toDouble()) * 100).toInt().coerceIn(1, 100)
+        val presentCount = allRecords.count { it.status == AttendanceStatus.PRESENT }
+        val permitCount = allRecords.count { it.status == AttendanceStatus.PERMITTED || it.status == AttendanceStatus.SICK }
+        val absentCount = allRecords.count { it.status == AttendanceStatus.ABSENT }
+        val totalExpected = allRecords.size
+        val presentRate = if (totalExpected > 0) {
+            ((presentCount.toDouble() / totalExpected.toDouble()) * 100).toInt().coerceIn(0, 100)
+        } else {
+            0
+        }
 
         binding.tvTeacherLaporanPresentRate.text = "$presentRate%"
         binding.tvTeacherLaporanPermitCount.text = permitCount.toString()
         binding.tvTeacherLaporanAbsentCount.text = absentCount.toString()
 
-        // Per-class metrics dynamically computed from database records
-        fun calculateClassRate(className: String, defaultRate: Int): Int {
-            val classRecords = allRecords.filter { it.className.equals(className, ignoreCase = true) }
-            val classPresent = classRecords.count { it.status == AttendanceStatus.PRESENT }
-            val classTotal = classRecords.size
-            return if (classTotal > 0) {
-                ((classPresent.toDouble() / classTotal.toDouble()) * 100).toInt().coerceIn(1, 100)
-            } else {
-                defaultRate
+        val cal = Calendar.getInstance()
+        val curMonth = cal.get(Calendar.MONTH)
+        val curYear = cal.get(Calendar.YEAR)
+
+        fun calculateWeekStats(startDay: Int, endDay: Int): Int {
+            val weekRecords = allRecords.filter { record ->
+                val rCal = Calendar.getInstance().apply { timeInMillis = record.timestamp }
+                rCal.get(Calendar.YEAR) == curYear &&
+                rCal.get(Calendar.MONTH) == curMonth &&
+                rCal.get(Calendar.DAY_OF_MONTH) in startDay..endDay
             }
+            if (weekRecords.isEmpty()) return 0
+            val pCount = weekRecords.count { it.status == AttendanceStatus.PRESENT }
+            return ((pCount.toDouble() / weekRecords.size.toDouble()) * 100).toInt().coerceIn(0, 100)
         }
 
-        val class1Rate = calculateClassRate("XI IPA 2", 92)
-        binding.tvLaporanClass1Percent.text = "$class1Rate%"
-        binding.pbLaporanClass1.progress = class1Rate
+        val rateW1 = calculateWeekStats(1, 7)
+        val rateW2 = calculateWeekStats(8, 14)
+        val rateW3 = calculateWeekStats(15, 21)
+        val rateW4 = calculateWeekStats(22, 31)
 
-        val class2Rate = calculateClassRate("XI TKJ 1", 89)
-        binding.tvLaporanClass2Percent.text = "$class2Rate%"
-        binding.pbLaporanClass2.progress = class2Rate
+        val density = resources.displayMetrics.density
+        fun updateBar(barView: View, tvPercent: TextView, rate: Int) {
+            tvPercent.text = "$rate%"
+            val barHeightDp = if (rate > 0) (4 + (rate * 80) / 100) else 4
+            val heightPx = (barHeightDp * density).toInt()
+            val lp = barView.layoutParams
+            lp.height = heightPx
+            barView.layoutParams = lp
+            barView.setBackgroundColor(if (rate > 0) Color.parseColor("#10B981") else Color.parseColor("#E5E7EB"))
+            tvPercent.setTextColor(
+                if (rate > 0) ContextCompat.getColor(this, R.color.hadirku_primary)
+                else ContextCompat.getColor(this, R.color.hadirku_text_muted)
+            )
+        }
 
-        val class3Rate = calculateClassRate("XII RPL 1", 94)
-        binding.tvLaporanClass3Percent.text = "$class3Rate%"
-        binding.pbLaporanClass3.progress = class3Rate
+        updateBar(binding.barLaporan1, binding.tvBarLaporanPercent1, rateW1)
+        updateBar(binding.barLaporan2, binding.tvBarLaporanPercent2, rateW2)
+        updateBar(binding.barLaporan3, binding.tvBarLaporanPercent3, rateW3)
+        updateBar(binding.barLaporan4, binding.tvBarLaporanPercent4, rateW4)
+
+        if (totalExpected == 0) {
+            binding.tvTeacherLaporanChartSubtitle.text = "Belum ada riwayat absensi siswa di database."
+        } else {
+            binding.tvTeacherLaporanChartSubtitle.text = "Persentase presensi bulan ini: $presentRate% ($totalExpected catatan)"
+        }
     }
 
     private fun renderTeacherProfilTab() {
@@ -1473,7 +1844,7 @@ class DashboardActivity : AppCompatActivity() {
 
         binding.tvTeacherProfilName.text = teacherName
         binding.tvTeacherProfilInitials.text = getInitials(teacherName)
-        binding.tvTeacherProfilNip.text = "NIP $teacherNip · Guru Pengajar"
+        binding.tvTeacherProfilNip.text = "NIP $teacherNip"
         binding.tvTeacherProfilUsername.text = username
 
         val todayIndonesian = SimpleDateFormat("EEEE", Locale.forLanguageTag("id-ID")).format(Date())
@@ -1495,9 +1866,6 @@ class DashboardActivity : AppCompatActivity() {
             val classNames = todaySchedules.map { it.className }.distinct()
             binding.tvTeacherProfilKelasAjar.text = classNames.joinToString(", ")
         }
-
-        val subjects = teacherSchedules.map { it.subject }.distinct()
-        binding.tvTeacherProfilMapel.text = if (subjects.isNotEmpty()) subjects.joinToString(", ") else "Matematika Wajib"
 
         val totalHours = teacherSchedules.sumOf { (it.periodEnd - it.periodStart + 1) }
         binding.tvTeacherProfilTotalJam.text = if (totalHours > 0) "$totalHours Jam Pelajaran" else "24 Jam Pelajaran"
@@ -1857,6 +2225,10 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun showAddScheduleDialog() {
+        showTeacherScheduleDialog(null, null)
+    }
+
+    private fun showTeacherScheduleDialog(scheduleToEdit: AttendanceSchedule? = null, defaultClass: String? = null) {
         val dialog = BottomSheetDialog(this)
         val dialogBinding = DialogAddScheduleBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
@@ -1868,9 +2240,50 @@ class DashboardActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("EEEE", Locale.forLanguageTag("id-ID"))
 
-        dialogBinding.etScheduleDate.setText(dateFormat.format(scheduleCalendar.time))
-        dialogBinding.etDayName.setText(dayFormat.format(scheduleCalendar.time))
+        // Setup class dropdown
+        val allClasses = repository.getAllClasses()
+        val classNames = if (allClasses.isNotEmpty()) allClasses.map { it.name }.distinct() else listOf("XI IPA 2", "XI RPL 1", "XI TKJ 1", "XII RPL 1")
+        val classAdapter = android.widget.ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, classNames)
+        dialogBinding.etClassName.setAdapter(classAdapter)
 
+        val isEdit = scheduleToEdit != null
+        if (isEdit) {
+            dialogBinding.tvDialogTitle.text = "Edit Jadwal Sesi Absensi"
+            dialogBinding.tvDialogSubtitle.text = "Perbarui detail mata pelajaran, ruangan, atau jam sesi presensi."
+            dialogBinding.btnSaveSchedule.text = "Simpan Perubahan"
+
+            dialogBinding.etClassName.setText(scheduleToEdit!!.className, false)
+            dialogBinding.etSubjectName.setText(scheduleToEdit.subject)
+            dialogBinding.etRoomName.setText(scheduleToEdit.room.ifBlank { "Ruang 10" })
+
+            if (scheduleToEdit.sessionDate.isNotBlank() && scheduleToEdit.sessionDate != "Hari ini") {
+                try {
+                    val parsed = dateFormat.parse(scheduleToEdit.sessionDate)
+                    if (parsed != null) scheduleCalendar.time = parsed
+                } catch (_: Exception) {}
+            }
+            dialogBinding.etScheduleDate.setText(dateFormat.format(scheduleCalendar.time))
+
+            val parts = scheduleToEdit.timeSlot.replace("WIB", "").trim().split("-")
+            val startStr = if (parts.isNotEmpty()) parts[0].trim() else "07:15"
+            val endStr = if (parts.size > 1) parts[1].trim() else "09:15"
+            dialogBinding.etStartTime.setText(startStr)
+            dialogBinding.etEndTime.setText(endStr)
+        } else {
+            dialogBinding.tvDialogTitle.text = "Input Jadwal Sesi Absensi"
+            dialogBinding.tvDialogSubtitle.text = "Buka sesi presensi untuk kelas, mata pelajaran, dan ruangan yang ditentukan."
+            dialogBinding.btnSaveSchedule.text = "Input Jadwal Absensi"
+
+            val initialClass = defaultClass ?: selectedTeacherSessionClass
+            dialogBinding.etClassName.setText(initialClass, false)
+            dialogBinding.etSubjectName.setText("")
+            dialogBinding.etRoomName.setText("Ruang 10")
+            dialogBinding.etScheduleDate.setText(dateFormat.format(scheduleCalendar.time))
+            dialogBinding.etStartTime.setText("07:15")
+            dialogBinding.etEndTime.setText("09:15")
+        }
+
+        // Date Picker Action
         val pickDateAction = View.OnClickListener {
             val y = scheduleCalendar.get(Calendar.YEAR)
             val m = scheduleCalendar.get(Calendar.MONTH)
@@ -1878,51 +2291,91 @@ class DashboardActivity : AppCompatActivity() {
             DatePickerDialog(this, { _, year, month, dayOfMonth ->
                 scheduleCalendar.set(year, month, dayOfMonth)
                 dialogBinding.etScheduleDate.setText(dateFormat.format(scheduleCalendar.time))
-                dialogBinding.etDayName.setText(dayFormat.format(scheduleCalendar.time))
             }, y, m, d).show()
         }
-
         dialogBinding.etScheduleDate.setOnClickListener(pickDateAction)
-        dialogBinding.tilScheduleDate.setOnClickListener(pickDateAction)
+        dialogBinding.tilScheduleDate.setEndIconOnClickListener(pickDateAction)
+
+        // Time Picker for Jam Mulai
+        dialogBinding.etStartTime.setOnClickListener {
+            val cur = dialogBinding.etStartTime.text.toString().trim()
+            val (h, min) = if (cur.contains(":")) {
+                val sp = cur.split(":")
+                Pair(sp[0].toIntOrNull() ?: 7, sp[1].toIntOrNull() ?: 15)
+            } else Pair(7, 15)
+            TimePickerDialog(this, { _, hourOfDay, minute ->
+                dialogBinding.etStartTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute))
+            }, h, min, true).show()
+        }
+
+        // Time Picker for Sampai Jam
+        dialogBinding.etEndTime.setOnClickListener {
+            val cur = dialogBinding.etEndTime.text.toString().trim()
+            val (h, min) = if (cur.contains(":")) {
+                val sp = cur.split(":")
+                Pair(sp[0].toIntOrNull() ?: 9, sp[1].toIntOrNull() ?: 15)
+            } else Pair(9, 15)
+            TimePickerDialog(this, { _, hourOfDay, minute ->
+                dialogBinding.etEndTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute))
+            }, h, min, true).show()
+        }
+
+        dialogBinding.etSubjectName.doAfterTextChanged {
+            dialogBinding.tilSubject.error = null
+        }
 
         dialogBinding.btnCancelSchedule.setOnClickListener {
             dialog.dismiss()
         }
 
         dialogBinding.btnSaveSchedule.setOnClickListener {
-            val className = dialogBinding.etClassName.text?.toString()?.trim().orEmpty()
+            val className = dialogBinding.etClassName.text.toString().trim().ifEmpty { "XI IPA 2" }
             val subject = dialogBinding.etSubjectName.text?.toString()?.trim().orEmpty()
-            val periodStart = dialogBinding.etPeriodStart.text?.toString()?.toIntOrNull() ?: 1
-            val periodEnd = dialogBinding.etPeriodEnd.text?.toString()?.toIntOrNull() ?: 2
-            val timeSlot = dialogBinding.etTimeSlot.text?.toString()?.trim().orEmpty()
-            val room = dialogBinding.etRoomName.text?.toString()?.trim().orEmpty()
+            val room = dialogBinding.etRoomName.text?.toString()?.trim().orEmpty().ifEmpty { "Ruang 10" }
             val sessionDate = dialogBinding.etScheduleDate.text?.toString()?.trim().orEmpty().ifEmpty { dateFormat.format(scheduleCalendar.time) }
-            val dayName = dialogBinding.etDayName.text?.toString()?.trim().orEmpty().ifEmpty { dayFormat.format(scheduleCalendar.time) }
+            val startTime = dialogBinding.etStartTime.text?.toString()?.trim().orEmpty().ifEmpty { "07:15" }
+            val endTime = dialogBinding.etEndTime.text?.toString()?.trim().orEmpty().ifEmpty { "09:15" }
+            val dayName = dayFormat.format(scheduleCalendar.time)
 
             if (subject.isEmpty()) {
                 dialogBinding.tilSubject.error = "Nama mata pelajaran wajib diisi"
                 return@setOnClickListener
             }
 
-            val newSchedule = AttendanceSchedule(
-                id = "sch_" + UUID.randomUUID().toString().take(8),
-                className = className.ifEmpty { "XI TKJ 1" },
+            val existingForClass = repository.getAllSchedules().firstOrNull {
+                it.className.trim().equals(className, ignoreCase = true) &&
+                (it.sessionDate == sessionDate || it.sessionDate == "Hari ini" || it.sessionDate.isBlank()) &&
+                it.sessionDate != "DELETED"
+            }
+            val targetId = scheduleToEdit?.id ?: existingForClass?.id ?: ("sch_" + System.currentTimeMillis())
+            val initialOpen = scheduleToEdit?.isOpenForAttendance ?: true
+            val finalSchedule = AttendanceSchedule(
+                id = targetId,
+                className = className,
                 subject = subject,
-                teacherId = currentUser?.id ?: "1985031201",
+                teacherId = currentUser?.id ?: "1982051001",
                 teacherName = currentUser?.name ?: "Guru Pengajar",
-                periodStart = periodStart,
-                periodEnd = periodEnd,
-                timeSlot = timeSlot.ifEmpty { "07:00 - 08:30 WIB" },
+                periodStart = 1,
+                periodEnd = 2,
+                timeSlot = "$startTime - $endTime WIB",
                 dayName = dayName,
-                room = room.ifEmpty { "Lab Komputer 1" },
-                isOpenForAttendance = true,
+                room = room,
+                isOpenForAttendance = initialOpen,
                 sessionDate = sessionDate
             )
+            if (finalSchedule.isExpired()) {
+                finalSchedule.isOpenForAttendance = false
+            }
 
-            repository.addSchedule(newSchedule)
+            repository.saveSchedule(finalSchedule)
             dialog.dismiss()
-            Toast.makeText(this, "Jadwal mengajar baru berhasil dibuat!", Toast.LENGTH_SHORT).show()
-            if (activeRole == UserRole.TEACHER) renderTeacherSchedules() else renderAdminSchedules()
+
+            selectedTeacherSessionClass = className
+            binding.actvTeacherClassTarget.setText(className, false)
+
+            val msg = if (isEdit) "Jadwal absensi berhasil diperbarui!" else "Jadwal sesi absensi baru berhasil dibuat!"
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+            renderTeacherAbsensiTab()
         }
 
         dialog.show()
@@ -1961,7 +2414,7 @@ class DashboardActivity : AppCompatActivity() {
 
         val records = repository.getAttendanceForClassAndSchedule(targetClass, schedule.id)
         dialogBinding.tvAttendanceSummaryCount.text = "Siswa Hadir: ${records.size} orang"
-        dialogBinding.tvAttendanceDateLabel.text = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID")).format(Date())
+        dialogBinding.tvAttendanceDateLabel.text = SimpleDateFormat("dd MMMM yyyy", Locale.forLanguageTag("id-ID")).format(Date())
 
         val container = dialogBinding.layoutAttendanceRecordsList
         container.removeAllViews()
